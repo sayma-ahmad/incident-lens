@@ -9,4 +9,8 @@ export const env = {
   get DATABASE_URL() {
     return required("DATABASE_URL");
   },
+  get OPENROUTER_API_KEY() {
+    return required("OPENROUTER_API_KEY");
+  },
+  OPENROUTER_MODEL: process.env.OPENROUTER_MODEL ?? "meta-llama/llama-3.3-70b-instruct:free",
 };
