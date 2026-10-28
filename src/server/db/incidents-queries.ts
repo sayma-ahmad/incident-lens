@@ -1,4 +1,4 @@
-import { and, asc, count, desc, eq, sql, type SQL } from "drizzle-orm";
+import { and, asc, count, desc, eq, ilike, isNotNull, sql, type SQL } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 
 import { db } from "@/server/db";
@@ -9,6 +9,7 @@ export type IncidentFilters = {
   confidence?: string;
   team?: string;
   date?: string;
+  sort?: "size" | "confidence";
   limit?: number;
   offset?: number;
 };
@@ -17,7 +18,7 @@ export type Verdict = "correct" | "wrong" | "split";
 
 export async function listIncidents(filters: IncidentFilters = {}) {
   const where: SQL[] = [];
-  if (filters.site) where.push(eq(incident.site, filters.site));
+  if (filters.site) where.push(ilike(incident.site, `%${filters.site}%`));
   if (filters.confidence) where.push(eq(incident.confidence, filters.confidence));
   if (filters.team) where.push(eq(incident.primaryTeam, filters.team));
   if (filters.date) where.push(sql`(${incident.startedAt} AT TIME ZONE 'Asia/Kolkata')::date = ${filters.date}::date`);
@@ -26,8 +27,18 @@ export async function listIncidents(filters: IncidentFilters = {}) {
   const limit = Math.min(Math.max(filters.limit ?? 50, 1), 500);
   const offset = Math.max(filters.offset ?? 0, 0);
 
-  const [counted] = await db.select({ total: count() }).from(incident).where(condition);
+  const [counted] = await db
+    .select({ total: count(), alerts: sql<number>`coalesce(sum(${incident.memberCount} + ${incident.repeatTotal}), 0)::int` })
+    .from(incident)
+    .where(condition);
   const total = counted?.total ?? 0;
+  const alerts = counted?.alerts ?? 0;
+
+  const confidenceOrder = sql`CASE ${incident.confidence} WHEN 'high' THEN 1 WHEN 'medium' THEN 2 ELSE 3 END`;
+  const order =
+    filters.sort === "confidence"
+      ? [confidenceOrder, desc(incident.memberCount), asc(incident.startedAt), asc(incident.id)]
+      : [desc(incident.memberCount), asc(incident.startedAt), asc(incident.id)];
   const items = await db
     .select({
       id: incident.id,
@@ -48,11 +59,20 @@ export async function listIncidents(filters: IncidentFilters = {}) {
     .from(incident)
     .leftJoin(alertEvent, eq(alertEvent.alertId, incident.rootAlertId))
     .where(condition)
-    .orderBy(desc(incident.memberCount), asc(incident.startedAt), asc(incident.id))
+    .orderBy(...order)
     .limit(limit)
     .offset(offset);
 
-  return { total, limit, offset, items };
+  return { total, alerts, limit, offset, items };
+}
+
+export async function listTeams() {
+  const rows = await db
+    .selectDistinct({ team: incident.primaryTeam })
+    .from(incident)
+    .where(isNotNull(incident.primaryTeam))
+    .orderBy(asc(incident.primaryTeam));
+  return rows.map((r) => r.team as string);
 }
 
 export async function getIncident(id: string) {
