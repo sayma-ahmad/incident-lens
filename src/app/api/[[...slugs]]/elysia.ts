@@ -1,7 +1,7 @@
 import { Elysia } from "elysia";
 
-import { incidentsController } from "@/server/api/controllers/incidents.controller";
+import { incidentsRoutes } from "@/server/api/controllers/incidents.controller";
 
-export const elysiaApp = new Elysia({ prefix: "/api" }).use(incidentsController);
+export const elysiaApp = new Elysia({ prefix: "/api" }).use(incidentsRoutes);
 
 export type ElysiaApp = typeof elysiaApp;
