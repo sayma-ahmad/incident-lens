@@ -107,7 +107,7 @@ const SYSTEM_PROMPT = [
   "Write one plain paragraph under 120 words.",
 ].join(" ");
 
-async function callModel(prompt: string): Promise<string> {
+async function callModel(model: string, prompt: string): Promise<string> {
   const res = await fetch(OPENROUTER_URL, {
     method: "POST",
     headers: {
@@ -116,7 +116,7 @@ async function callModel(prompt: string): Promise<string> {
       "X-Title": "incident-lens",
     },
     body: JSON.stringify({
-      model: env.OPENROUTER_MODEL,
+      model,
       temperature: 0.2,
       max_tokens: 300,
       messages: [
@@ -140,8 +140,11 @@ function checkOutput(text: string, rootAlertId: string): string | null {
 }
 
 export async function explainIncidents(force = false): Promise<ExplainResult> {
+  const model = env.OPENROUTER_MODEL;
+  const apiKey = env.OPENROUTER_API_KEY;
+  if (!apiKey) throw new Error("OPENROUTER_API_KEY is required");
   const ids = await pickIncidents(force);
-  const result: ExplainResult = { model: env.OPENROUTER_MODEL, selected: ids.length, saved: [], skipped: [] };
+  const result: ExplainResult = { model, selected: ids.length, saved: [], skipped: [] };
 
   for (const id of ids) {
     const { facts, members, reasons } = await loadFacts(id);
@@ -150,14 +153,14 @@ export async function explainIncidents(force = false): Promise<ExplainResult> {
       continue;
     }
     try {
-      const text = await callModel(buildPrompt(facts, members, reasons));
+      const text = await callModel(model, buildPrompt(facts, members, reasons));
       const problem = checkOutput(text, facts.root_alert_id);
       if (problem) {
         result.skipped.push({ id, reason: problem });
         continue;
       }
       await db.execute(sql`
-        UPDATE incident SET explanation_ai = ${text}, ai_model = ${env.OPENROUTER_MODEL} WHERE id = ${id}
+        UPDATE incident SET explanation_ai = ${text}, ai_model = ${model} WHERE id = ${id}
       `);
       result.saved.push(id);
     } catch (e) {

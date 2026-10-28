@@ -28,9 +28,17 @@ export const incidentsRoutes = new Elysia()
       }),
     },
   )
-  .post("/incidents/explain", ({ query }) => explainIncidents(query.force === "true"), {
-    query: t.Object({ force: t.Optional(t.String()) }),
-  })
+  .post(
+    "/incidents/explain",
+    async ({ query, status }) => {
+      try {
+        return await explainIncidents(query.force === "true");
+      } catch (e) {
+        return status(400, { error: e instanceof Error ? e.message : "explain failed" });
+      }
+    },
+    { query: t.Object({ force: t.Optional(t.String()) }) },
+  )
   .get("/incidents/:id", async ({ params, status }) => {
     const found = await getIncident(params.id);
     return found ?? status(404, { error: "Incident not found" });

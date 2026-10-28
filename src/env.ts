@@ -12,5 +12,11 @@ export const env = {
   get OPENROUTER_API_KEY() {
     return required("OPENROUTER_API_KEY");
   },
-  OPENROUTER_MODEL: process.env.OPENROUTER_MODEL ?? "meta-llama/llama-3.3-70b-instruct:free",
+  get OPENROUTER_MODEL() {
+    const model = process.env.OPENROUTER_MODEL?.trim() || "meta-llama/llama-3.3-70b-instruct:free";
+    if (!/^[\w.-]+\/[\w.-]+:free$/.test(model)) {
+      throw new Error(`OPENROUTER_MODEL must be an OpenRouter free model ending in ":free", got "${model}"`);
+    }
+    return model;
+  },
 };
