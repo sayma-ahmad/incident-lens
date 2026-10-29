@@ -34,7 +34,7 @@ WITH alfa_ids AS (
 ),
 
 exact_links AS (
-    -- Rule 1: Incident numeric correlation ID matches Alfa ticket number.
+
     SELECT
         i.ticket_id AS msolve_ticket_id,
         a.ticket_id AS alfa_ticket_id,
@@ -61,7 +61,6 @@ exact_links AS (
 
     UNION ALL
 
-    -- Rule 2: Incident prefixed correlation ID matches Alfa ticket ID.
     SELECT
         i.ticket_id AS msolve_ticket_id,
         a.ticket_id AS alfa_ticket_id,
@@ -88,8 +87,6 @@ exact_links AS (
 
     UNION ALL
 
-    -- Service Request Rule 1:
-    -- Numeric correlation ID matches Alfa ticket number.
     SELECT
         sr.ticket_id AS msolve_ticket_id,
         a.ticket_id AS alfa_ticket_id,
@@ -112,8 +109,6 @@ exact_links AS (
 
     UNION ALL
 
-    -- Service Request Rule 2:
-    -- Full prefixed correlation ID matches Alfa ticket ID.
     SELECT
         sr.ticket_id AS msolve_ticket_id,
         a.ticket_id AS alfa_ticket_id,
@@ -153,7 +148,6 @@ SELECT
 FROM exact_links
 ON CONFLICT (msolve_ticket_id, alfa_ticket_id) DO NOTHING;
 
--- Report all exact incident and service-request mapping methods.
 SELECT
     match_method,
     COUNT(*) AS link_count,

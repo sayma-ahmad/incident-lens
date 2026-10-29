@@ -1,6 +1,5 @@
 BEGIN;
 
--- Reset derived objects before rebuilding normalized data.
 DROP VIEW IF EXISTS ticket_view_previous;
 DROP VIEW IF EXISTS ticket_view;
 
@@ -11,7 +10,6 @@ DROP TABLE IF EXISTS alfa_ticket;
 
 SET LOCAL TIME ZONE 'Asia/Kolkata';
 
--- 1. Clean MSOLVE incidents
 CREATE TABLE msolve_incident (
     source_row_id BIGINT PRIMARY KEY,
     source_file TEXT,
@@ -87,7 +85,6 @@ SELECT
     record_json
 FROM raw_msolve_incidents;
 
--- 2. Clean MSOLVE service requests
 CREATE TABLE msolve_sr (
     source_row_id BIGINT PRIMARY KEY,
     source_file TEXT,
@@ -140,7 +137,6 @@ SELECT
     record_json
 FROM raw_msolve_service_requests;
 
--- 3. Combine and clean all three Alfa datasets
 CREATE TABLE alfa_ticket (
     source_row_id BIGINT PRIMARY KEY,
     source_file TEXT,
@@ -226,7 +222,6 @@ SELECT
     record_json
 FROM raw_alfa_tickets;
 
--- Indexes for common ticket lookups and mapping
 CREATE INDEX idx_msolve_incident_ticket_id
     ON msolve_incident(ticket_id);
 CREATE INDEX idx_msolve_incident_correlation_id
@@ -248,7 +243,6 @@ CREATE INDEX idx_alfa_ticket_created_on
 CREATE INDEX idx_alfa_ticket_subject
     ON alfa_ticket(subject);
 
--- Report normalized row counts
 SELECT 'msolve_incident' AS table_name, COUNT(*) AS row_count
 FROM msolve_incident
 UNION ALL

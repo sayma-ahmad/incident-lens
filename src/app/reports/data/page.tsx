@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { confidenceLabel, matchMethodLabel } from "@/lib/labels";
 
 type DataReport = {
   sourceCounts: { source: string; row_count: number }[];
@@ -153,9 +154,6 @@ export default function DataReportPage() {
               Source data quality and MSOLVE–Alfa ticket mapping results.
             </p>
           </div>
-          <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-600">
-            Read-only POC
-          </span>
         </div>
       </header>
 
@@ -278,9 +276,9 @@ export default function DataReportPage() {
                   {report.matchesByMethod.map((row) => (
                     <tr key={`${row.match_method}-${row.confidence}`}>
                       <td className="px-4 py-3 font-medium">
-                        {row.match_method}
+                        {matchMethodLabel(row.match_method)}
                       </td>
-                      <td className="px-4 py-3">{row.confidence}</td>
+                      <td className="px-4 py-3">{confidenceLabel(row.confidence)}</td>
                       <td className="px-4 py-3 text-right">{number(row.links)}</td>
                       <td className="px-4 py-3 text-right">
                         {number(row.unique_msolve_tickets)}
@@ -381,7 +379,7 @@ export default function DataReportPage() {
                     <tr key={`${row.assignment_group}-${row.department}-${row.match_method}-${index}`}>
                       <td className="px-4 py-3">{row.assignment_group}</td>
                       <td className="px-4 py-3">{row.department}</td>
-                      <td className="px-4 py-3">{row.match_method}</td>
+                      <td className="px-4 py-3">{matchMethodLabel(row.match_method)}</td>
                       <td className="px-4 py-3 text-right">
                         {number(row.matched_pairs)}
                       </td>

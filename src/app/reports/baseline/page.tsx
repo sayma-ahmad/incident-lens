@@ -59,8 +59,6 @@ function dateLabel(value: string) {
   }).format(date);
 }
 
-// These database timestamps represent IST wall-clock periods.
-// Display their supplied date/time components without shifting the hour.
 function periodLabel(value: string) {
   const match = value.match(
     /^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2})/,
@@ -162,9 +160,6 @@ export default function BaselineReportPage() {
               Ticket volume before correlation and grouping.
             </p>
           </div>
-          <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-600">
-            Read-only POC
-          </span>
         </div>
       </header>
 

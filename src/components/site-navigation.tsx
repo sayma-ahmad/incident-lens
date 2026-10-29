@@ -5,6 +5,8 @@ const navigationLinks = [
   { label: "Source Tickets", href: "/tickets" },
   { label: "Data Report", href: "/reports/data" },
   { label: "Baseline Report", href: "/reports/baseline" },
+  { label: "Incidents", href: "/incidents" },
+  { label: "Scorecard", href: "/scorecard" },
 ];
 
 export function SiteNavigation() {

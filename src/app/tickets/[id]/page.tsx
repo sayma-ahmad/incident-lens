@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import { confidenceLabel, matchMethodLabel } from "@/lib/labels";
 
 type TicketRecord = {
   source: string;
@@ -172,9 +173,6 @@ export default function TicketDetailPage() {
               Inspect the source ticket and its cross-tool mapping evidence.
             </p>
           </div>
-          <span className="rounded-full border border-slate-200 px-3 py-1 text-xs text-slate-600">
-            Read-only POC
-          </span>
         </div>
       </header>
 
@@ -269,11 +267,11 @@ export default function TicketDetailPage() {
                               {link.alfa_ticket_id}
                             </td>
                             <td className="px-4 py-3">
-                              {link.match_method}
+                              {matchMethodLabel(link.match_method)}
                             </td>
                             <td className="px-4 py-3">
                               <span className="rounded-full bg-slate-100 px-2 py-1 text-xs">
-                                {link.confidence}
+                                {confidenceLabel(link.confidence)}
                               </span>
                             </td>
                             <td className="px-4 py-3">

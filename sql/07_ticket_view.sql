@@ -30,7 +30,6 @@ alfa_links AS (
     GROUP BY alfa_ticket_id
 )
 
--- MSOLVE incidents
 SELECT
     'MSOLVE Incident'::TEXT AS source,
     i.source_row_id,
@@ -42,7 +41,7 @@ SELECT
     il.linked_ticket_id,
     il.match_method,
     (il.link_count IS NOT NULL) AS is_cross_tool_copy,
-    FALSE AS is_duplicate, -- Cross-tool linkage alone does not establish a duplicate.
+    FALSE AS is_duplicate,
     COALESCE(il.link_count, 0) AS linked_ticket_count,
     NULL::TEXT AS source_sheet,
     i.priority,
@@ -53,7 +52,6 @@ LEFT JOIN incident_links il
 
 UNION ALL
 
--- MSOLVE service requests
 SELECT
     'MSOLVE Service Request'::TEXT AS source,
     sr.source_row_id,
@@ -80,7 +78,6 @@ LEFT JOIN incident_links sl
 
 UNION ALL
 
--- Alfa tickets: retain all source rows, including duplicate IDs.
 SELECT
     'Alfa'::TEXT AS source,
     a.source_row_id,

@@ -1,4 +1,0 @@
-﻿pandas
-psycopg[binary]
-openpyxl
-python-dotenv

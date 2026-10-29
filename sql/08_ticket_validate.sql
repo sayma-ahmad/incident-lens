@@ -1,8 +1,3 @@
--- Incident Lens POC
--- Developer 1 - D1.13: Data validation
--- Read-only checks; does not update or delete data.
--- Incident matching counts deliberately exclude service-request links.
-
 WITH incident_match_methods AS (
     SELECT unnest(ARRAY[
         'numeric_correlation_id',

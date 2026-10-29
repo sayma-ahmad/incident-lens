@@ -1,10 +1,5 @@
 BEGIN;
 
--- Rule 3:
--- Find MSOLVE incident numbers without a direct correlation-ID match
--- in Alfa Incident/Alert ticket subjects.
--- All results remain low-confidence candidates requiring review.
-
 WITH incidents_without_direct_match AS (
     SELECT
         i.ticket_id,
@@ -103,7 +98,6 @@ JOIN candidate_counts c
   ON c.msolve_ticket_id = p.msolve_ticket_id
 ON CONFLICT (msolve_ticket_id, alfa_ticket_id) DO NOTHING;
 
--- Report Rule 3 results, including when no candidates are found.
 SELECT
     COUNT(*) AS rule_3_links,
     COUNT(DISTINCT msolve_ticket_id) AS unique_incidents,

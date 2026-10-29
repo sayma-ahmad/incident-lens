@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { matchMethodLabel } from "@/lib/labels";
 
 type Filters = {
   source: string;
@@ -172,9 +173,6 @@ export default function TicketsPage() {
               Browse MSOLVE incidents, service requests and Alfa tickets.
             </p>
           </div>
-          <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-600">
-            Read-only POC
-          </span>
         </div>
       </header>
 
@@ -397,7 +395,7 @@ export default function TicketsPage() {
                         {ticket.linked_ticket_id || "—"}
                       </td>
                       <td className="px-5 py-4 text-xs text-slate-500">
-                        {ticket.match_method || "—"}
+                        {matchMethodLabel(ticket.match_method)}
                       </td>
                     </tr>
                   ))}

@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ConfidenceChip } from "@/components/incidents/confidence-chip";
 import { FeedbackForm } from "@/components/incidents/feedback-form";
 import { getIncident } from "@/server/db/incidents-queries";
+import { reasonLabel } from "@/lib/labels";
 
 export const dynamic = "force-dynamic";
 
@@ -145,8 +146,8 @@ export default async function IncidentPage({ params }: { params: Promise<{ id: s
                         .map((r) => r.trim())
                         .filter(Boolean)
                         .map((r) => (
-                          <span key={r} className="rounded bg-gray-100 px-1.5 py-0.5 font-mono text-[10px] text-gray-700">
-                            {r}
+                          <span key={r} className="rounded bg-gray-100 px-1.5 py-0.5 text-[11px] text-gray-700">
+                            {reasonLabel(r)}
                           </span>
                         ))}
                     </div>

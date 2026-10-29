@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS incident_member;
+DROP TABLE IF EXISTS incident;
 DROP TABLE IF EXISTS alert_event;
 
 CREATE TABLE alert_event (

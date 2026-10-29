@@ -23,6 +23,22 @@ const pages = [
     href: "/reports/baseline",
     action: "View baseline report",
   },
+  {
+    number: "04",
+    title: "Correlation Workspace",
+    description:
+      "See alerts grouped into probable incidents by site and time, with root alert, recommended team and confidence.",
+    href: "/incidents",
+    action: "Open workspace",
+  },
+  {
+    number: "05",
+    title: "Scorecard",
+    description:
+      "Check alert compression, repeats removed, team agreement, confidence spread and engineer feedback.",
+    href: "/scorecard",
+    action: "View scorecard",
+  },
 ];
 
 export default function HomePage() {
@@ -38,14 +54,11 @@ export default function HomePage() {
               Incident Data Explorer
             </h1>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-              Explore source tickets, review cross-system mapping results and
-              understand the historical ticket baseline.
+              Explore source tickets, review cross-system mapping results,
+              understand the historical baseline and review correlated alert
+              incidents.
             </p>
           </div>
-
-          <span className="shrink-0 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-600">
-            Read-only POC
-          </span>
         </div>
       </header>
 
