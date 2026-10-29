@@ -3,7 +3,7 @@ import { sql } from "drizzle-orm";
 import { env } from "@/env";
 import { db } from "@/server/db";
 
-const DEMO_IDS = [
+export const DEMO_IDS = [
   "NAGP1-20261011-0954",
   "RDPPL-20261011-1805",
   "IGTPL-20261010-0613",
@@ -104,7 +104,11 @@ const SYSTEM_PROMPT = [
   "Use only the facts given. Do not invent devices, causes or numbers.",
   "Say 'probable' and 'recommended'. Never say the cause is confirmed.",
   "Cite the root alert ID exactly as given.",
-  "Write one plain paragraph under 120 words.",
+  "Write exactly three short paragraphs separated by a blank line:",
+  "1. What happened: alert count, site, and time window.",
+  "2. Order of events: which device layer reported the problem first and what followed.",
+  "3. Cautious conclusion identifying the layer that may be the primary point of investigation.",
+  "Keep total response under 120 words.",
 ].join(" ");
 
 async function callModel(model: string, prompt: string): Promise<string> {
@@ -136,6 +140,13 @@ async function callModel(model: string, prompt: string): Promise<string> {
 function checkOutput(text: string, rootAlertId: string): string | null {
   if (!text.includes(rootAlertId)) return "root alert ID missing";
   if (/(?<!not )\bconfirmed\b/i.test(text)) return "says confirmed";
+  const paragraphs = text
+    .split(/\n\s*\n/)
+    .map((p) => p.trim())
+    .filter(Boolean);
+  if (paragraphs.length < 2 || paragraphs.length > 4) {
+    return `paragraph count must be 2 to 4, got ${paragraphs.length}`;
+  }
   return null;
 }
 

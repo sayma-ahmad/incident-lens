@@ -1,4 +1,4 @@
-﻿import "@/styles/globals.css";
+import "@/styles/globals.css";
 
 import type { Metadata } from "next";
 import { SiteNavigation } from "@/components/site-navigation";
@@ -13,9 +13,12 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-slate-50 text-slate-900">
+      <body className="flex min-h-screen flex-col bg-surface text-body antialiased">
         <SiteNavigation />
-        {children}
+        <div className="flex-1">{children}</div>
+        <footer className="border-t border-panel bg-panel px-4 py-4 text-center text-xs sm:text-sm font-medium text-on-panel-muted">
+          AI-Powered Infrastructure Incident Intelligence · Mahindra & Mahindra · POC, shadow mode
+        </footer>
       </body>
     </html>
   );
