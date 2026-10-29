@@ -1,8 +1,17 @@
 -- Incident Lens POC
 -- Developer 1 - D1.13: Data validation
 -- Read-only checks; does not update or delete data.
+-- Incident matching counts deliberately exclude service-request links.
 
-WITH checks AS (
+WITH incident_match_methods AS (
+    SELECT unnest(ARRAY[
+        'numeric_correlation_id',
+        'prefixed_correlation_id',
+        'exact_subject_time_within_10m',
+        'incident_number_in_alfa_subject'
+    ]::TEXT[]) AS match_method
+),
+checks AS (
     SELECT
         'Raw MSOLVE incidents' AS check_name,
         '2573' AS expected,
@@ -178,11 +187,16 @@ WITH checks AS (
     SELECT
         'Matched MSOLVE incidents',
         '2382',
-        COUNT(DISTINCT msolve_ticket_id)::text,
-        CASE WHEN COUNT(DISTINCT msolve_ticket_id) = 2382
-             THEN 'PASS' ELSE 'REVIEW' END,
-        'Includes exact matches and low-confidence fallback candidates'
-    FROM ticket_link
+        COUNT(DISTINCT l.msolve_ticket_id)::text,
+        CASE
+            WHEN COUNT(DISTINCT l.msolve_ticket_id) = 2382
+                THEN 'PASS'
+            ELSE 'REVIEW'
+        END,
+        'Incident links only; excludes service-request mapping methods'
+    FROM ticket_link l
+    JOIN incident_match_methods m
+      ON m.match_method = l.match_method
 
     UNION ALL
     SELECT
@@ -190,11 +204,13 @@ WITH checks AS (
         '191',
         COUNT(*)::text,
         CASE WHEN COUNT(*) = 191 THEN 'PASS' ELSE 'REVIEW' END,
-        'Incidents without any ticket_link'
+        'Incidents without an incident link; service-request links do not count'
     FROM msolve_incident i
     WHERE NOT EXISTS (
         SELECT 1
         FROM ticket_link l
+        JOIN incident_match_methods m
+          ON m.match_method = l.match_method
         WHERE l.msolve_ticket_id = i.ticket_id
     )
 )

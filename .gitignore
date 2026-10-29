@@ -13,3 +13,10 @@ next-env.d.ts
 .DS_Store
 
 /data/
+
+# Python virtual environment
+.venv/
+
+# Python cache files
+__pycache__/
+*.py[cod]

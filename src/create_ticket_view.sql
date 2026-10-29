@@ -2,10 +2,14 @@ CREATE OR REPLACE VIEW ticket_view AS
 WITH incident_links AS (
     SELECT
         msolve_ticket_id,
-        STRING_AGG(DISTINCT alfa_ticket_id, ', ' ORDER BY alfa_ticket_id)
-            AS linked_ticket_id,
-        STRING_AGG(DISTINCT match_method, ', ' ORDER BY match_method)
-            AS match_method,
+        STRING_AGG(
+            DISTINCT alfa_ticket_id,
+            ', ' ORDER BY alfa_ticket_id
+        ) AS linked_ticket_id,
+        STRING_AGG(
+            DISTINCT match_method,
+            ', ' ORDER BY match_method
+        ) AS match_method,
         COUNT(*) AS link_count
     FROM ticket_link
     GROUP BY msolve_ticket_id
@@ -13,10 +17,14 @@ WITH incident_links AS (
 alfa_links AS (
     SELECT
         alfa_ticket_id,
-        STRING_AGG(DISTINCT msolve_ticket_id, ', ' ORDER BY msolve_ticket_id)
-            AS linked_ticket_id,
-        STRING_AGG(DISTINCT match_method, ', ' ORDER BY match_method)
-            AS match_method,
+        STRING_AGG(
+            DISTINCT msolve_ticket_id,
+            ', ' ORDER BY msolve_ticket_id
+        ) AS linked_ticket_id,
+        STRING_AGG(
+            DISTINCT match_method,
+            ', ' ORDER BY match_method
+        ) AS match_method,
         COUNT(*) AS link_count
     FROM ticket_link
     GROUP BY alfa_ticket_id
@@ -33,8 +41,8 @@ SELECT
     i.state AS status,
     il.linked_ticket_id,
     il.match_method,
-    FALSE AS is_cross_tool_copy,
-    FALSE AS is_duplicate,
+    (il.link_count IS NOT NULL) AS is_cross_tool_copy,
+    FALSE AS is_duplicate, -- Cross-tool linkage alone does not establish a duplicate.
     COALESCE(il.link_count, 0) AS linked_ticket_count,
     NULL::TEXT AS source_sheet,
     i.priority,
@@ -58,19 +66,21 @@ SELECT
     ) AS subject,
     sr.assignment_group AS team,
     sr.stage AS status,
-    NULL::TEXT AS linked_ticket_id,
-    NULL::TEXT AS match_method,
-    FALSE AS is_cross_tool_copy,
+    sl.linked_ticket_id,
+    sl.match_method,
+    (sl.link_count IS NOT NULL) AS is_cross_tool_copy,
     FALSE AS is_duplicate,
-    0::BIGINT AS linked_ticket_count,
+    COALESCE(sl.link_count, 0) AS linked_ticket_count,
     NULL::TEXT AS source_sheet,
     NULL::TEXT AS priority,
     sr.source_record
 FROM msolve_sr sr
+LEFT JOIN incident_links sl
+    ON sl.msolve_ticket_id = sr.ticket_id
 
 UNION ALL
 
--- Alfa tickets: retain all source rows, including duplicate IDs
+-- Alfa tickets: retain all source rows, including duplicate IDs.
 SELECT
     'Alfa'::TEXT AS source,
     a.source_row_id,
@@ -82,7 +92,7 @@ SELECT
     al.linked_ticket_id,
     al.match_method,
     (al.link_count IS NOT NULL) AS is_cross_tool_copy,
-    (al.link_count IS NOT NULL) AS is_duplicate,
+    FALSE AS is_duplicate,
     COALESCE(al.link_count, 0) AS linked_ticket_count,
     a.source_sheet,
     a.priority,

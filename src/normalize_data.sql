@@ -1,4 +1,14 @@
 BEGIN;
+
+-- Reset derived objects before rebuilding normalized data.
+DROP VIEW IF EXISTS ticket_view_previous;
+DROP VIEW IF EXISTS ticket_view;
+
+DROP TABLE IF EXISTS ticket_link;
+DROP TABLE IF EXISTS msolve_incident;
+DROP TABLE IF EXISTS msolve_sr;
+DROP TABLE IF EXISTS alfa_ticket;
+
 SET LOCAL TIME ZONE 'Asia/Kolkata';
 
 -- 1. Clean MSOLVE incidents

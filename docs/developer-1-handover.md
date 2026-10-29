@@ -1,4 +1,4 @@
-# Incident Lens POC — Developer 1 Handover
+﻿# Incident Lens POC â€” Developer 1 Handover
 
 ## 1. Project Scope
 
@@ -145,11 +145,7 @@ Fresh replay completed successfully in the separate local PostgreSQL database
 `mahindra_d114_test` on 27 October 2026. The existing `mahindra_poc` database
 was not used as the replay target.
 
-The previous POC loader at
-`E:\technotribes\mahindra-incident-poc\src\load_raw_data.py` was used with
-PGDATABASE explicitly set to mahindra_d114_test. The current repository still
-does not contain its own raw data loading script, so a portable, self-contained
-setup and replay procedure remains a handover item.
+The current repository includes the loader at src/load_raw_data.py. It reads .env.loader.local and checks that the target database is mahindra_d114_test. It reloads three raw staging tables. Setup instructions are in docs/data-loading.md, and the replay sequence and walkthrough are in docs/demo-script.md.
 
 Verified replay results:
 - Raw MSOLVE incidents: 2,573
@@ -179,8 +175,7 @@ Fallback links remain low-confidence candidates and must not be described as
 confirmed duplicates. Review the 17 previous-only and 77 new-only pairs, and
 confirm with the PM whether the raw-table structure deviation is acceptable.
 
-The normalization SQL creates tables and is not idempotent. Do not rerun it
-against a populated database; use a separate empty test database for replay.
+The normalization SQL drops and recreates derived objects before rebuilding them. This is destructive. Run it only against the dedicated mahindra_d114_test database after verifying the selected database. Never run it against mahindra_poc.
 The original validation script also queries comparison tables from the
 previous POC. validate_data_replay.sql was generated for fresh-database checks
 without those historical comparison dependencies.

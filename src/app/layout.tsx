@@ -1,9 +1,11 @@
-import "@/styles/globals.css";
+﻿import "@/styles/globals.css";
 
 import type { Metadata } from "next";
+import { SiteNavigation } from "@/components/site-navigation";
 
 export const metadata: Metadata = {
   title: "Incident Lens",
+  description: "Read-only incident and ticket analysis proof of concept.",
 };
 
 export default function RootLayout({
@@ -11,7 +13,10 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body className="min-h-screen bg-slate-50 text-slate-900">
+        <SiteNavigation />
+        {children}
+      </body>
     </html>
   );
 }
