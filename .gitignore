@@ -11,3 +11,8 @@ next-env.d.ts
 *.log
 
 .DS_Store
+
+/data/
+
+__pycache__/
+*.py[cod]
