@@ -1,4 +1,4 @@
-﻿# Incident Lens POC â€” Developer 1 Handover
+# Incident Lens POC â€” Developer 1 Handover
 
 ## 1. Project Scope
 
@@ -24,7 +24,7 @@ Deployment and external-system integration are outside the current scope.
 - D1.11: Baseline report screen tested.
 - D1.12: Home page and navigation tested.
 - D1.13: Validation SQL executed successfully.
-- D1.14: Fresh-database replay completed; handover review in progress.
+- D1.14: Blocked pending an agreed integration decision. Fresh-database replay completed, but cross-branch Incidents and Scorecard integration remains unresolved.
 
 ## 3. Verified Source Counts
 
@@ -113,7 +113,6 @@ an approved rule and supporting evidence.
 - src/create_ticket_links.sql
 - src/insert_fallback_links.sql
 - src/create_ticket_view.sql
-- src/validate_data.sql
 - src/validate_data_replay.sql
 - src/app/api/[[...slugs]]/elysia.ts
 - src/app/tickets/page.tsx
@@ -176,9 +175,13 @@ confirmed duplicates. Review the 17 previous-only and 77 new-only pairs, and
 confirm with the PM whether the raw-table structure deviation is acceptable.
 
 The normalization SQL drops and recreates derived objects before rebuilding them. This is destructive. Run it only against the dedicated mahindra_d114_test database after verifying the selected database. Never run it against mahindra_poc.
-The original validation script also queries comparison tables from the
-previous POC. validate_data_replay.sql was generated for fresh-database checks
-without those historical comparison dependencies.
+The previous validation script was removed because it depended on comparison tables from the old POC. Use `src/validate_data_replay.sql` for fresh-database checks; it does not depend on those historical tables.
+
+### Review Point D1-14: Navigation & Cross-Branch Page Integration
+- Shared navigation (`src/components/site-navigation.tsx`) currently contains only verified, working `dev1` routes (`/`, `/tickets`, `/reports/data`, `/reports/baseline`).
+- The Incidents (`/incidents`, `/incidents/[id]`) and Scorecard (`/scorecard`) pages exist on `origin/dev2`, but depend on a separate alert-grouping schema, `sql/dev2/` migrations, components (`src/components/incidents/`), OpenRouter AI services, and tables (`incident_group`, `incident_alert`, `incident_feedback`, `alert_event`).
+- In accordance with review rules, links to routes that do not exist on `dev1` must not be added to the navigation.
+- D1-14 is marked as blocked pending an agreed integration decision regarding how to reconcile the D1 and D2 schemas and pipelines, rather than being marked complete.
 ## 11. Deployment
 
 Deployment and external-system integration are not included in the current
