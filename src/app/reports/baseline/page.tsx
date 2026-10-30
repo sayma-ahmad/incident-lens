@@ -131,7 +131,6 @@ export default function BaselineReportPage() {
     };
   }, []);
 
-  // Compute daily volume calculations
   const dailyTotals =
     report?.dailyVolumes.map((d) => ({
       ...d,
@@ -148,14 +147,12 @@ export default function BaselineReportPage() {
     null as (typeof dailyTotals)[0] | null,
   );
 
-  // Repeated subjects max
   const topRepeated = report?.repeatedSubjects.slice(0, 10) ?? [];
   const maxRepeatedCount = Math.max(
     ...topRepeated.map((r) => r.record_count),
     1,
   );
 
-  // Departments max
   const topDepartments = report?.departmentVolumes ?? [];
   const maxDeptCount = Math.max(
     ...topDepartments.map((d) => d.ticket_records),
@@ -201,7 +198,6 @@ export default function BaselineReportPage() {
 
       {!loading && !error && report && (
         <div className="space-y-12">
-          {/* Summary Stat Tiles */}
           <section className="space-y-4">
             <h2 className="text-xl font-bold tracking-tight text-heading">
               Baseline volume metrics
@@ -235,7 +231,6 @@ export default function BaselineReportPage() {
             </div>
           </section>
 
-          {/* 1. Tickets per day: Vertical Bar Chart */}
           <section className="space-y-4">
             <div className="flex flex-wrap items-end justify-between gap-2">
               <div>
@@ -259,7 +254,6 @@ export default function BaselineReportPage() {
             </div>
 
             <Card className="p-6">
-              {/* Vertical bar chart container */}
               <div className="pt-8 pb-2">
                 <div className="flex items-end justify-between gap-1 sm:gap-2 h-64 border-b border-line px-2">
                   {dailyTotals.map((day) => {
@@ -274,14 +268,12 @@ export default function BaselineReportPage() {
                         key={day.report_date}
                         className="flex flex-col items-center flex-1 h-full justify-end group relative"
                       >
-                        {/* Tooltip / Peak indicator */}
                         {isPeak && (
                           <div className="absolute -top-7 text-[10px] font-bold text-accent bg-accent/10 px-1.5 py-0.5 rounded whitespace-nowrap">
                             Peak: {number(day.combined)}
                           </div>
                         )}
 
-                        {/* Bar */}
                         <div
                           style={{ height: `${heightPct}%` }}
                           className={`w-full max-w-[28px] rounded-t-md transition-all duration-300 ${
@@ -296,7 +288,6 @@ export default function BaselineReportPage() {
                           )} MSOLVE)`}
                         />
 
-                        {/* Date label */}
                         <span
                           className={`mt-2 text-[10px] sm:text-xs tracking-tight truncate ${
                             isPeak
@@ -328,7 +319,6 @@ export default function BaselineReportPage() {
             </Card>
           </section>
 
-          {/* 2. Busiest 15-minute periods: Top 5 Cards */}
           <section className="space-y-4">
             <div>
               <h2 className="text-xl font-bold tracking-tight text-heading">
@@ -396,7 +386,6 @@ export default function BaselineReportPage() {
             </div>
           </section>
 
-          {/* 3. Most Repeated Subjects: Top 10 Horizontal Bars */}
           <section className="space-y-4">
             <div>
               <h2 className="text-xl font-bold tracking-tight text-heading">
@@ -428,7 +417,7 @@ export default function BaselineReportPage() {
                         subject.unique_ticket_ids,
                       )} IDs)`}
                       percentage={percentage}
-                      barColor="bg-accent"
+                      barColor={idx === 0 ? "bg-accent" : "bg-muted/40"}
                     />
                   </div>
                 );
@@ -436,7 +425,6 @@ export default function BaselineReportPage() {
             </Card>
           </section>
 
-          {/* 4. Tickets by Team / Department: Horizontal Bars */}
           <section className="space-y-4">
             <div>
               <h2 className="text-xl font-bold tracking-tight text-heading">
@@ -465,11 +453,7 @@ export default function BaselineReportPage() {
                         dept.closed_by_system_records,
                       )} closed by System)`}
                       percentage={percentage}
-                      barColor={
-                        dept.department.toLowerCase().includes("bot")
-                          ? "bg-heading"
-                          : "bg-accent"
-                      }
+                      barColor={idx === 0 ? "bg-accent" : "bg-muted/40"}
                     />
                   </div>
                 );
@@ -477,7 +461,6 @@ export default function BaselineReportPage() {
             </Card>
           </section>
 
-          {/* 5. Complete Report Data in Disclosures */}
           <section className="space-y-4">
             <div>
               <h2 className="text-xl font-bold tracking-tight text-heading">
@@ -489,7 +472,6 @@ export default function BaselineReportPage() {
             </div>
 
             <div className="space-y-3">
-              {/* Disclosure 1: Daily ticket volume */}
               <Disclosure
                 title="Show details: Full daily ticket volumes"
                 openLabel="Show details: Full daily ticket volumes"
@@ -527,7 +509,6 @@ export default function BaselineReportPage() {
                 </div>
               </Disclosure>
 
-              {/* Disclosure 2: Top 10 busiest periods */}
               <Disclosure
                 title="Show details: Top 10 busiest 15-minute periods"
                 openLabel="Show details: Top 10 busiest 15-minute periods"
@@ -572,7 +553,6 @@ export default function BaselineReportPage() {
                 </div>
               </Disclosure>
 
-              {/* Disclosure 3: 20 most repeated subjects */}
               <Disclosure
                 title={`Show details: 20 most repeated subjects (${report.repeatedSubjects.length} records)`}
                 openLabel={`Show details: 20 most repeated subjects (${report.repeatedSubjects.length} records)`}
@@ -606,7 +586,6 @@ export default function BaselineReportPage() {
                 </div>
               </Disclosure>
 
-              {/* Disclosure 4: Department volumes */}
               <Disclosure
                 title="Show details: Full department ticket breakdown"
                 openLabel="Show details: Full department ticket breakdown"
@@ -646,7 +625,6 @@ export default function BaselineReportPage() {
             </div>
           </section>
 
-          {/* Methodology and limitations */}
           <section className="rounded-xl border border-line bg-chip/40 p-5 space-y-3">
             <h3 className="font-bold text-heading text-sm">
               Definitions and baseline methodology
