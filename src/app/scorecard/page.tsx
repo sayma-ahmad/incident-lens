@@ -41,7 +41,6 @@ function ResultCard({
   return (
     <Card className="flex flex-col justify-between p-6 space-y-4">
       <div className="space-y-3">
-        {/* Header: title and target status pill */}
         <div className="flex flex-wrap items-center justify-between gap-2">
           <span className="text-xs font-bold uppercase tracking-wider text-muted">
             {title}
@@ -91,7 +90,6 @@ function ResultCard({
           )}
         </div>
 
-        {/* Big value and target */}
         <div>
           <div className="text-3xl sm:text-4xl font-extrabold text-heading tracking-tight">
             {value}
@@ -103,7 +101,6 @@ function ResultCard({
           )}
         </div>
 
-        {/* Progress bar towards target or metric level */}
         <div className="pt-1">
           <Bar
             label={progressLabel ?? (target ? "Progress towards target" : "Metric level")}
@@ -113,13 +110,11 @@ function ResultCard({
           />
         </div>
 
-        {/* Plain-language explanation */}
         <p className="text-sm font-medium leading-relaxed text-body">
           {explanation}
         </p>
       </div>
 
-      {/* Technical detail footnote */}
       <div className="pt-3 border-t border-line text-xs text-muted leading-relaxed">
         {detail}
       </div>
@@ -139,7 +134,6 @@ export default async function ScorecardPage() {
   const disagreeCount = (s.agreement.compared ?? 0) - (s.agreement.agreed ?? 0);
   const feedbackTotal = s.feedback.reduce((sum, f) => sum + f.count, 0);
 
-  // Confidence calculations
   const highConf = s.confidence.find((r) => r.confidence?.toLowerCase() === "high")?.incidents ?? 0;
   const medConf = s.confidence.find((r) => r.confidence?.toLowerCase() === "medium")?.incidents ?? 0;
   const lowConf = s.confidence.find((r) => r.confidence?.toLowerCase() === "low")?.incidents ?? 0;
@@ -149,7 +143,6 @@ export default async function ScorecardPage() {
   const medPct = Math.round((medConf / totalConf) * 100);
   const lowPct = Math.max(0, 100 - highPct - medPct);
 
-  // Benchmarks calculations
   const stormRatio = c?.storm_ratio ?? 0;
   const stormTarget = 5;
   const stormProgress = stormTarget > 0 ? (stormRatio / stormTarget) * 100 : 0;
@@ -164,7 +157,6 @@ export default async function ScorecardPage() {
 
   return (
     <main className="mx-auto max-w-7xl p-6 space-y-10">
-      {/* PageHeader */}
       <PageHeader
         sectionLabel="STEP 6 · RESULTS"
         title="Did it help?"
@@ -180,10 +172,9 @@ export default async function ScorecardPage() {
       />
 
       <div className="text-xs text-muted">
-        Shadow-mode analysis on {num(c?.total_alerts)} alerts from 1 Oct 2026. Groupings are probable, not confirmed.
+        Analysis of {num(c?.total_alerts)} alerts from 1 Oct 2026. Groupings are probable, not confirmed.
       </div>
 
-      {/* 1. Five result cards */}
       <section className="space-y-4">
         <div>
           <SectionLabel>KEY BENCHMARKS</SectionLabel>
@@ -193,7 +184,6 @@ export default async function ScorecardPage() {
         </div>
 
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {/* Card 1: Alert compression overall */}
           <ResultCard
             title="Alert compression overall"
             value={`${c?.compression_ratio ?? 0} : 1`}
@@ -208,7 +198,6 @@ export default async function ScorecardPage() {
             }
           />
 
-          {/* Card 2: Alert compression in storms */}
           <ResultCard
             title="Alert compression in storms"
             value={`${c?.storm_ratio ?? 0} : 1`}
@@ -224,7 +213,6 @@ export default async function ScorecardPage() {
             }
           />
 
-          {/* Card 3: Repeats removed */}
           <ResultCard
             title="Repeats removed"
             value={`${num(c?.repeats)} (${c?.repeat_share ?? 0}%)`}
@@ -238,7 +226,6 @@ export default async function ScorecardPage() {
             }
           />
 
-          {/* Card 4: Hand-offs avoided */}
           <ResultCard
             title="Hand-offs avoided"
             value={`${avoidedPct}%`}
@@ -255,7 +242,6 @@ export default async function ScorecardPage() {
             }
           />
 
-          {/* Card 5: Team agreement */}
           <ResultCard
             title="Team agreement"
             value={`${agreementPct}%`}
@@ -273,7 +259,6 @@ export default async function ScorecardPage() {
         </div>
       </section>
 
-      {/* 2. Confidence spread */}
       <section className="space-y-4">
         <div>
           <SectionLabel>GROUP QUALITY</SectionLabel>
@@ -281,12 +266,11 @@ export default async function ScorecardPage() {
             Confidence spread
           </h2>
           <p className="mt-1 text-xs text-muted">
-            Shows distribution of incident grouping confidence based on network topology rules. Click any segment to view filtered incidents.
+            Shows distribution of incident grouping confidence based on site, alert count and the probable-cause symptom. Click any segment to view filtered incidents.
           </p>
         </div>
 
         <Card className="p-6 space-y-5">
-          {/* Stacked horizontal bar */}
           <div className="space-y-2">
             <div className="flex h-6 w-full overflow-hidden rounded-lg bg-line">
               {highConf > 0 && (
@@ -325,7 +309,6 @@ export default async function ScorecardPage() {
             </div>
           </div>
 
-          {/* Interactive filter cards */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <Link
               href="/incidents?confidence=high"
@@ -369,7 +352,6 @@ export default async function ScorecardPage() {
         </Card>
       </section>
 
-      {/* 3. Engineer feedback */}
       <section className="space-y-4">
         <div>
           <SectionLabel>HUMAN IN THE LOOP</SectionLabel>
@@ -418,7 +400,6 @@ export default async function ScorecardPage() {
         )}
       </section>
 
-      {/* 4. Team disagreements */}
       <section className="space-y-4">
         <div>
           <SectionLabel>OPERATIONAL REVIEW</SectionLabel>
@@ -436,7 +417,6 @@ export default async function ScorecardPage() {
           </Card>
         ) : (
           <div className="space-y-5">
-            {/* Responsive disagreement cards */}
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {s.agreement.disagreements.slice(0, 6).map((d) => (
                 <Link
@@ -480,7 +460,6 @@ export default async function ScorecardPage() {
               ))}
             </div>
 
-            {/* Complete original table accessible via Disclosure */}
             <Disclosure
               title={`Show details (${num(s.agreement.disagreements.length)} rows)`}
               openLabel="Show details"
@@ -531,7 +510,6 @@ export default async function ScorecardPage() {
         )}
       </section>
 
-      {/* 5. Closing note */}
       <section className="rounded-xl border border-line bg-chip/60 p-5 shadow-xs">
         <div className="flex items-start gap-3.5">
           <div className="mt-0.5 shrink-0 text-accent">

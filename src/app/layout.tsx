@@ -17,7 +17,7 @@ export default function RootLayout({
         <SiteNavigation />
         <div className="flex-1">{children}</div>
         <footer className="border-t border-panel bg-panel px-4 py-4 text-center text-xs sm:text-sm font-medium text-on-panel-muted">
-          AI-Powered Infrastructure Incident Intelligence · Mahindra & Mahindra · POC, shadow mode
+          AI-Powered Infrastructure Incident Intelligence · Mahindra & Mahindra
         </footer>
       </body>
     </html>
