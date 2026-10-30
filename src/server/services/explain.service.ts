@@ -3,7 +3,7 @@ import { sql } from "drizzle-orm";
 import { env } from "@/env";
 import { db } from "@/server/db";
 
-export const DEMO_IDS = [
+export const FEATURED_IDS = [
   "NAGP1-20261011-0954",
   "RDPPL-20261011-1805",
   "IGTPL-20261010-0613",
@@ -45,7 +45,7 @@ async function pickIncidents(force: boolean): Promise<string[]> {
     SELECT id FROM (
       (SELECT id FROM incident ORDER BY member_count DESC, id LIMIT 20)
       UNION
-      SELECT id FROM incident WHERE id IN (${sql.join(DEMO_IDS.map((id) => sql`${id}`), sql`, `)})
+      SELECT id FROM incident WHERE id IN (${sql.join(FEATURED_IDS.map((id) => sql`${id}`), sql`, `)})
     ) x
     WHERE ${force} OR id IN (SELECT id FROM incident WHERE explanation_ai IS NULL)
     ORDER BY id

@@ -3,7 +3,7 @@ import { alias } from "drizzle-orm/pg-core";
 
 import { db } from "@/server/db";
 import { alertEvent, incident, incidentFeedback, incidentMember } from "@/server/db/incidents-schema";
-import { DEMO_IDS } from "@/server/services/explain.service";
+import { FEATURED_IDS } from "@/server/services/explain.service";
 
 export type IncidentFilters = {
   site?: string;
@@ -81,7 +81,7 @@ export async function listAiCandidateIncidents() {
     SELECT id FROM (
       (SELECT id FROM incident ORDER BY member_count DESC, id LIMIT 20)
       UNION
-      SELECT id FROM incident WHERE id IN (${sql.join(DEMO_IDS.map((id) => sql`${id}`), sql`, `)})
+      SELECT id FROM incident WHERE id IN (${sql.join(FEATURED_IDS.map((id) => sql`${id}`), sql`, `)})
     ) x
   `;
 
