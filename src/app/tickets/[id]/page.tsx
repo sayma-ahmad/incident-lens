@@ -158,7 +158,6 @@ function SideBySideCard({
   return (
     <Card className="p-6 flex flex-col justify-between space-y-6">
       <div className="space-y-4">
-        {/* Card header */}
         <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line pb-3">
           <div className="flex items-center gap-2">
             <span className="text-xs font-bold uppercase tracking-wider text-muted">
@@ -176,7 +175,6 @@ function SideBySideCard({
           </Chip>
         </div>
 
-        {/* Ticket ID & Subject */}
         <div>
           <h3 className="font-mono text-xl font-bold text-heading">
             {ticket.ticket_id}
@@ -186,7 +184,6 @@ function SideBySideCard({
           </p>
         </div>
 
-        {/* Fact chips */}
         <div className="flex flex-wrap gap-2 pt-2">
           <Chip>📅 {formatDate(ticket.created_on)}</Chip>
           <Chip>👥 {ticket.team || "No team"}</Chip>
@@ -195,7 +192,6 @@ function SideBySideCard({
         </div>
       </div>
 
-      {/* Collapsed Original Record Disclosure */}
       <div className="pt-4 border-t border-line">
         <Disclosure
           title="Original record"
@@ -277,7 +273,6 @@ export default function TicketDetailPage() {
 
   return (
     <main className="mx-auto max-w-7xl p-6 space-y-8">
-      {/* Back button & page header */}
       <div className="space-y-4">
         <Link
           href="/tickets"
@@ -303,7 +298,6 @@ export default function TicketDetailPage() {
               {primaryTicket.subject || "No subject recorded"}
             </p>
 
-            {/* Fact chips */}
             <div className="flex flex-wrap items-center gap-2 pt-1">
               <Chip>📅 {formatDate(primaryTicket.created_on)}</Chip>
               <Chip>👥 {primaryTicket.team || "No team"}</Chip>
@@ -339,7 +333,6 @@ export default function TicketDetailPage() {
 
       {!loading && !error && result && (
         <>
-          {/* Side-by-side comparison: MSOLVE on Left, AlfaNow on Right */}
           <section className="space-y-4">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <h2 className="text-xl font-bold text-heading">
@@ -353,14 +346,12 @@ export default function TicketDetailPage() {
             </div>
 
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-              {/* MSOLVE on the left */}
               <SideBySideCard
                 title="MSOLVE Ticket"
                 ticket={linkedMsolveTicket}
                 isPrimary={isMsolvePrimary}
               />
 
-              {/* AlfaNow on the right */}
               <SideBySideCard
                 title="AlfaNow Ticket"
                 ticket={linkedAlfaTicket}
@@ -369,7 +360,6 @@ export default function TicketDetailPage() {
             </div>
           </section>
 
-          {/* Why we linked these / Matching evidence */}
           <section className="space-y-4">
             <h2 className="text-xl font-bold text-heading">
               Why we linked these
@@ -439,7 +429,6 @@ export default function TicketDetailPage() {
                         </div>
                       </div>
 
-                      {/* Evidence details */}
                       {link.evidence && Object.keys(link.evidence).length > 0 && (
                         <div className="mt-2 pt-3 border-t border-line text-xs">
                           <span className="font-bold text-muted uppercase tracking-wider block mb-2">

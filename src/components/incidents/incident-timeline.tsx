@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Chip } from "@/components/ui";
-import { reasonLabel } from "@/lib/labels";
+import { deviceTypeLabel, reasonLabel, symptomLabel } from "@/lib/labels";
 import type { getIncident } from "@/server/db/incidents-queries";
 
 type MemberAlert = NonNullable<Awaited<ReturnType<typeof getIncident>>>["members"][number];
@@ -60,13 +60,7 @@ const shortTimeFormat = new Intl.DateTimeFormat("en-IN", {
   hour12: false,
 });
 
-function humanize(text?: string | null): string {
-  if (!text) return "—";
-  return text.replace(/_/g, " ");
-}
-
 export function IncidentTimeline({ members }: { members: MemberAlert[] }) {
-  // State to track which lanes are expanded when they exceed the collapse threshold
   const [expandedLanes, setExpandedLanes] = useState<Record<string, boolean>>({});
 
   function toggleLane(laneKey: string) {
@@ -76,7 +70,6 @@ export function IncidentTimeline({ members }: { members: MemberAlert[] }) {
     }));
   }
 
-  // Group alerts by lane
   const groupedByLane = LANES.map((lane) => {
     const alertsInLane = members.filter((m) => assignLane(m.deviceType) === lane.key);
     return {
@@ -91,7 +84,6 @@ export function IncidentTimeline({ members }: { members: MemberAlert[] }) {
         const total = laneGroup.alerts.length;
         const isCollapsed = total > 5 && !expandedLanes[laneGroup.key];
 
-        // If collapsed: show first 2, a collapsed indicator with summary times, and last 2
         const visibleAlerts = isCollapsed
           ? [...laneGroup.alerts.slice(0, 2), ...laneGroup.alerts.slice(-2)]
           : laneGroup.alerts;
@@ -113,7 +105,6 @@ export function IncidentTimeline({ members }: { members: MemberAlert[] }) {
             key={laneGroup.key}
             className="rounded-xl border border-line bg-surface p-5 space-y-4 shadow-xs"
           >
-            {/* Lane Header */}
             <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line pb-3">
               <div className="flex items-center gap-2">
                 <span className="size-2.5 rounded-full bg-accent" />
@@ -126,13 +117,11 @@ export function IncidentTimeline({ members }: { members: MemberAlert[] }) {
               </span>
             </div>
 
-            {/* Vertical timeline items */}
             <div className="relative pl-6 space-y-4 before:absolute before:left-2.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-line">
               {visibleAlerts.map((alert, idx) => {
                 const isRoot = alert.isRoot;
                 const isRepeat = alert.isRepeat;
 
-                // If collapsed and we just rendered the first 2 items, insert the collapse toggle bar
                 const showCollapseBar = isCollapsed && idx === 1;
 
                 return (
@@ -142,7 +131,6 @@ export function IncidentTimeline({ members }: { members: MemberAlert[] }) {
                     className="space-y-4 scroll-mt-6"
                   >
                     <div className="relative flex items-start gap-4 text-xs group">
-                      {/* Node circle on the vertical timeline */}
                       <div className="absolute -left-6 top-1 flex items-center justify-center">
                         {isRoot ? (
                           <span
@@ -162,12 +150,10 @@ export function IncidentTimeline({ members }: { members: MemberAlert[] }) {
                         )}
                       </div>
 
-                      {/* Time on the left */}
                       <div className="w-24 shrink-0 font-mono text-muted text-[11px] pt-0.5">
                         {timeFormat.format(alert.createdAt)} IST
                       </div>
 
-                      {/* Content */}
                       <div
                         className={`flex-1 rounded-lg p-3 transition ${
                           isRoot
@@ -193,20 +179,18 @@ export function IncidentTimeline({ members }: { members: MemberAlert[] }) {
                           </div>
 
                           <div className="flex items-center gap-2 text-muted text-[11px]">
-                            <span>{alert.host || humanize(alert.deviceType)}</span>
+                            <span>{alert.host || deviceTypeLabel(alert.deviceType)}</span>
                             <span>·</span>
                             <span className="font-medium text-heading">
-                              {humanize(alert.symptom)}
+                              {symptomLabel(alert.symptom)}
                             </span>
                           </div>
                         </div>
 
-                        {/* Subject */}
                         <p className="mt-1.5 text-xs text-body leading-relaxed">
                           {alert.subject || "No subject text recorded"}
                         </p>
 
-                        {/* Reason codes */}
                         {alert.reason && (
                           <div className="mt-2.5 flex flex-wrap gap-1 pt-1.5 border-t border-line/50">
                             {alert.reason
@@ -223,7 +207,6 @@ export function IncidentTimeline({ members }: { members: MemberAlert[] }) {
                       </div>
                     </div>
 
-                    {/* Middle Collapsed Bar */}
                     {showCollapseBar && (
                       <div className="relative my-2 pl-4">
                         <button
@@ -244,7 +227,6 @@ export function IncidentTimeline({ members }: { members: MemberAlert[] }) {
               })}
             </div>
 
-            {/* Collapse button when expanded */}
             {!isCollapsed && total > 5 && (
               <div className="pt-2 text-right">
                 <button

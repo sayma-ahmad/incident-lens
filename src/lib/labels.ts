@@ -22,26 +22,24 @@ const CONFIDENCE_LABELS: Record<string, string> = {
 };
 
 const DEVICE_TYPE_LABELS: Record<string, string> = {
-  firewall: "Firewall / SD-WAN",
-  firewall_sdwan: "Firewall / SD-WAN",
+  sdwan_firewall: "Firewall / SD-WAN",
   core_switch: "Core switch",
   access_switch: "Access switch",
-  switch: "Switch",
   access_point: "Access point",
-  server: "Server",
-  router: "Router",
+  windows_server: "Windows server",
+  linux_server: "Linux server",
+  storage: "Storage",
+  other: "Other device",
 };
 
 const SYMPTOM_LABELS: Record<string, string> = {
   link_down: "Link down",
-  node_down: "Node down",
-  device_down: "Device down",
-  interface_down: "Interface down",
-  high_cpu: "High CPU utilization",
-  high_memory: "High memory utilization",
-  packet_loss: "Packet loss",
-  power_supply: "Power supply failure",
-  fan_failure: "Fan failure",
+  unreachable: "Unreachable",
+  restart: "Restarted",
+  agent_down: "Monitoring agent down",
+  resource: "CPU, memory or SNMP",
+  link_up: "Link back up",
+  other: "Other problem",
 };
 
 export function humanize(value: string) {
@@ -82,7 +80,7 @@ export function symptomLabel(value: string | null | undefined): string {
 
 export function teamLabel(value: string | null | undefined): string {
   if (!value) return "—";
-  return humanize(value);
+  return value;
 }
 
 export function statusLabel(value: string | null | undefined): string {
