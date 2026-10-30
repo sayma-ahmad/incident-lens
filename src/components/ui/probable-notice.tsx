@@ -19,7 +19,7 @@ export function ProbableNotice({
       <span className="size-1.5 shrink-0 rounded-full bg-accent" aria-hidden="true" />
       <span>
         {children ??
-          "Probable, needs engineer confirmation. Nothing is written back to ServiceNow."}
+          "Probable, needs engineer confirmation."}
       </span>
     </div>
   );

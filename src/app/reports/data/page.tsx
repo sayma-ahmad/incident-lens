@@ -90,7 +90,7 @@ function getRuleExplanation(method: string): string {
     case "incident_number_in_alfa_subject":
       return "Finds MSOLVE incident number mentioned directly within the AlfaNow ticket subject.";
     default:
-      return "Rule-based mapping between ticket sources.";
+      return "Mapping between ticket sources.";
   }
 }
 
@@ -129,7 +129,6 @@ export default function DataReportPage() {
     };
   }, []);
 
-  // Compute derived source metrics
   const msolveIncidents =
     report?.sourceCounts?.find((s) => s.source.includes("Incident"))?.row_count ?? null;
 
@@ -148,7 +147,6 @@ export default function DataReportPage() {
       ? msolveIncidents + msolveSr + alfaTickets
       : null;
 
-  // Funnel calculations
   const totalIncidents = report?.mappingSummary?.total_incidents ?? msolveIncidents ?? 2573;
 
   const exactLinks =
@@ -159,6 +157,11 @@ export default function DataReportPage() {
           m.match_method === "prefixed_correlation_id",
       )
       ?.reduce((acc, m) => acc + m.links, 0) ?? 991;
+
+  const srExactLinks =
+    report?.matchesByMethod
+      ?.filter((m) => m.match_method.startsWith("service_request_"))
+      ?.reduce((acc, m) => acc + m.links, 0) ?? 0;
 
   const candidateLinks =
     report?.matchesByMethod
@@ -173,7 +176,6 @@ export default function DataReportPage() {
     report?.mappingSummary?.unmatched_incidents ??
     Math.max(0, totalIncidents - exactLinks - candidateLinks);
 
-  // Group match methods
   const exactMethods =
     report?.matchesByMethod?.filter(
       (m) =>
@@ -229,7 +231,6 @@ export default function DataReportPage() {
 
       {!loading && !error && report && (
         <div className="space-y-12">
-          {/* 1. Source Summary */}
           <section className="space-y-5">
             <div>
               <h2 className="text-xl font-bold tracking-tight text-heading">
@@ -258,7 +259,6 @@ export default function DataReportPage() {
               />
             </div>
 
-            {/* Stacked source-share bar */}
             {totalLoaded && (
               <Card className="p-5 space-y-3">
                 <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
@@ -327,7 +327,6 @@ export default function DataReportPage() {
             )}
           </section>
 
-          {/* 2. Linking Funnel */}
           <section className="space-y-5">
             <div>
               <h2 className="text-xl font-bold tracking-tight text-heading">
@@ -378,21 +377,19 @@ export default function DataReportPage() {
                 />
               </div>
 
-              {/* Service request mapping note */}
               <div className="rounded-xl border border-line bg-chip/40 p-4 space-y-1.5 text-xs text-body">
                 <div className="flex items-center gap-2 font-bold text-heading">
                   <span className="size-2 rounded-full bg-accent" />
                   <span>Service Request Mapping</span>
                 </div>
                 <p>
-                  <strong>462 exact links</strong> connect MSOLVE service requests to AlfaNow tickets via correlation ID.
+                  <strong>{number(srExactLinks)} exact links</strong> connect MSOLVE service requests to AlfaNow tickets via correlation ID.
                   Because the export lacks creation timestamps for service requests, lag calculation is omitted.
                 </p>
               </div>
             </Card>
           </section>
 
-          {/* 3. Matches by Method */}
           <section className="space-y-6">
             <div>
               <h2 className="text-xl font-bold tracking-tight text-heading">
@@ -403,7 +400,6 @@ export default function DataReportPage() {
               </p>
             </div>
 
-            {/* Exact matches group */}
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <span className="size-2 rounded-full bg-accent" />
@@ -452,7 +448,6 @@ export default function DataReportPage() {
               </div>
             </div>
 
-            {/* Candidate matches group */}
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <span className="size-2 rounded-full bg-muted" />
@@ -502,7 +497,6 @@ export default function DataReportPage() {
             </div>
           </section>
 
-          {/* 4. Data Gaps */}
           <section className="space-y-4">
             <div>
               <h2 className="text-xl font-bold tracking-tight text-heading">
@@ -556,7 +550,6 @@ export default function DataReportPage() {
             </div>
           </section>
 
-          {/* 5. Complete Data Tables in Disclosures */}
           <section className="space-y-4">
             <h2 className="text-xl font-bold tracking-tight text-heading">
               Complete report data
@@ -566,7 +559,6 @@ export default function DataReportPage() {
             </p>
 
             <div className="space-y-3">
-              {/* Table 1: Source record counts */}
               <Disclosure
                 title="Show details: Source record counts"
                 openLabel="Show details: Source record counts"
@@ -596,7 +588,6 @@ export default function DataReportPage() {
                 </div>
               </Disclosure>
 
-              {/* Table 2: Alfa ticket prefixes */}
               <Disclosure
                 title="Show details: AlfaNow ticket prefixes"
                 openLabel="Show details: AlfaNow ticket prefixes"
@@ -630,7 +621,6 @@ export default function DataReportPage() {
                 </div>
               </Disclosure>
 
-              {/* Table 3: Time difference statistics */}
               <Disclosure
                 title="Show details: Time difference between matched tickets"
                 openLabel="Show details: Time difference between matched tickets"
@@ -671,7 +661,6 @@ export default function DataReportPage() {
                 </div>
               </Disclosure>
 
-              {/* Table 4: Mapping coverage by contact type */}
               <Disclosure
                 title="Show details: Mapping coverage by contact type"
                 openLabel="Show details: Mapping coverage by contact type"
@@ -716,7 +705,6 @@ export default function DataReportPage() {
                 </div>
               </Disclosure>
 
-              {/* Table 5: Assignment group vs department */}
               <Disclosure
                 title="Show details: Assignment group vs department mapping"
                 openLabel="Show details: Assignment group vs department mapping"
@@ -751,7 +739,6 @@ export default function DataReportPage() {
                 </div>
               </Disclosure>
 
-              {/* Table 6: Unmatched sample */}
               <Disclosure
                 title={`Show details: Sample of unmatched MSOLVE incidents (${report.unmatchedSample.length} records)`}
                 openLabel={`Show details: Sample of unmatched MSOLVE incidents (${report.unmatchedSample.length} records)`}
@@ -792,7 +779,6 @@ export default function DataReportPage() {
             </div>
           </section>
 
-          {/* Timestamp assumptions panel */}
           <section className="rounded-xl border border-line bg-chip/40 p-5 space-y-2">
             <h3 className="font-bold text-heading text-sm">
               Timestamp assumptions and scope notes

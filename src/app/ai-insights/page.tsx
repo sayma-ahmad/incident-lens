@@ -43,7 +43,6 @@ export default async function AiInsightsPage({
 
   const candidates = await listAiCandidateIncidents();
 
-  // Featured incident: genuinely saved AI explanation or NAGP1 demo incident or first candidate
   const featured =
     candidates.find((c) => c.hasAi) ??
     candidates.find((c) => c.id === "NAGP1-20261011-0954") ??
@@ -56,7 +55,6 @@ export default async function AiInsightsPage({
 
   return (
     <main className="mx-auto max-w-7xl p-6 space-y-10">
-      {/* PageHeader */}
       <PageHeader
         sectionLabel="STEP 5 · EXPLAIN"
         title="AI-explained incidents"
@@ -65,11 +63,10 @@ export default async function AiInsightsPage({
           "AI explanations are generated for the largest and most critical incidents to accelerate engineer triage.",
           "Rules find the incident group, the probable root cause, and the team. AI only generates the narrative summary.",
           "Sensitive details such as IP addresses and email addresses are masked before prompts are sent.",
-          "Shadow mode: every finding is probable until verified by an operations engineer.",
+          "Every finding is probable until verified by an operations engineer.",
         ]}
       />
 
-      {/* 1. Featured insight */}
       {featured && (
         <section className="space-y-4">
           <div className="flex flex-wrap items-end justify-between gap-3">
@@ -98,7 +95,6 @@ export default async function AiInsightsPage({
         </section>
       )}
 
-      {/* 2. How the AI works */}
       <section className="space-y-4">
         <div>
           <SectionLabel>SAFETY ARCHITECTURE</SectionLabel>
@@ -106,7 +102,7 @@ export default async function AiInsightsPage({
             How the AI works
           </h2>
           <p className="mt-1 text-xs text-muted">
-            Strict boundaries ensure the AI assists engineers without ever hallucinating or modifying ServiceNow data.
+            Strict boundaries keep the AI to the facts it is given, and it never changes ServiceNow data.
           </p>
         </div>
 
@@ -150,13 +146,12 @@ export default async function AiInsightsPage({
               4. Safety check
             </h3>
             <p className="text-xs leading-relaxed text-body">
-              We check the answer: it must not claim a confirmed cause. Otherwise we show the rule-based summary.
+              We check the answer: it must cite the starting alert and must not claim a confirmed cause.
             </p>
           </Card>
         </div>
       </section>
 
-      {/* 3. All AI-explained incidents */}
       <section className="space-y-5">
         <div className="flex flex-wrap items-center justify-between gap-4 border-b border-line pb-4">
           <div>
@@ -165,11 +160,10 @@ export default async function AiInsightsPage({
               All AI-explained incidents
             </h2>
             <p className="mt-1 text-xs text-muted">
-              Showing candidate incidents prioritized by size and demo prominence ({candidates.length} candidate incidents).
+              Showing candidate incidents prioritized by size and featured examples ({candidates.length} candidate incidents).
             </p>
           </div>
 
-          {/* Filter: Show only AI-generated */}
           <div className="flex items-center gap-2">
             <Link
               href="/ai-insights"
@@ -203,7 +197,7 @@ export default async function AiInsightsPage({
               No incidents with AI explanations found
             </p>
             <p className="text-xs text-muted max-w-md mx-auto">
-              No incidents currently have saved AI explanations. Candidate incidents use rule-based fallback summaries until an external run is generated.
+              No AI summaries are available for these incidents yet.
             </p>
             <div className="pt-2">
               <Link
@@ -229,7 +223,6 @@ export default async function AiInsightsPage({
                   className="flex flex-col justify-between rounded-xl border border-line bg-surface p-5 shadow-xs transition hover:border-accent hover:shadow-md group"
                 >
                   <div className="space-y-3">
-                    {/* Top Chips & Tag */}
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <div className="flex flex-wrap items-center gap-1.5">
                         <Chip className="font-bold">Site {item.site}</Chip>
@@ -256,25 +249,18 @@ export default async function AiInsightsPage({
                           </svg>
                           <span>AI-generated</span>
                         </span>
-                      ) : (
-                        <span className="rounded-full bg-chip px-2 py-0.5 text-[11px] font-semibold text-heading border border-line">
-                          Rule-based
-                        </span>
-                      )}
+                      ) : null}
                     </div>
 
-                    {/* Incident ID */}
                     <div className="font-mono text-xs font-semibold text-muted group-hover:text-accent transition">
                       {item.id}
                     </div>
 
-                    {/* First paragraph of explanation */}
                     <p className="text-xs text-body line-clamp-3 leading-relaxed">
                       {firstParagraph}
                     </p>
                   </div>
 
-                  {/* Footer */}
                   <div className="mt-4 pt-3 border-t border-line flex flex-wrap items-center justify-between gap-2 text-xs">
                     <div className="flex items-center gap-2">
                       <ConfidenceBadge confidence={item.confidence} />
@@ -294,7 +280,6 @@ export default async function AiInsightsPage({
         )}
       </section>
 
-      {/* 4. Honesty box */}
       <section className="rounded-xl border border-line bg-chip/60 p-5 shadow-xs">
         <div className="flex items-start gap-3.5">
           <div className="mt-0.5 shrink-0 text-accent">
@@ -314,7 +299,7 @@ export default async function AiInsightsPage({
             </svg>
           </div>
           <p className="text-xs sm:text-sm leading-relaxed text-heading font-medium">
-            AI wording is generated by a free model. Facts, grouping and team choice come from rules, not AI. Every result is probable until an engineer confirms it.
+            Facts, grouping and team choice come from correlation rules. Every result is probable until an engineer confirms it.
           </p>
         </div>
       </section>

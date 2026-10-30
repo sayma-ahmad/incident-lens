@@ -1,5 +1,4 @@
-import Link from "next/link";
-import { Chip, ConfidenceBadge, SectionLabel } from "@/components/ui";
+import { ConfidenceBadge, SectionLabel } from "@/components/ui";
 
 export type AiInsightCardIncident = {
   id: string;
@@ -24,19 +23,6 @@ export interface AiInsightCardProps {
   showHeader?: boolean;
 }
 
-const dateFormat = new Intl.DateTimeFormat("en-IN", {
-  timeZone: "Asia/Kolkata",
-  day: "2-digit",
-  month: "short",
-});
-
-const timeFormat = new Intl.DateTimeFormat("en-IN", {
-  timeZone: "Asia/Kolkata",
-  hour: "2-digit",
-  minute: "2-digit",
-  hour12: false,
-});
-
 export function parseParagraphs(text?: string | null): string[] {
   if (!text || !text.trim()) return [];
   const paragraphs = text
@@ -46,14 +32,26 @@ export function parseParagraphs(text?: string | null): string[] {
   return paragraphs.length > 0 ? paragraphs : [text.trim()];
 }
 
+export function splitTemplate(text?: string | null): string[] {
+  if (!text || !text.trim()) return [];
+  const sentences = text
+    .trim()
+    .split(/(?<=\.)\s+(?=[A-Z])/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+  if (sentences.length < 3) return [text.trim()];
+  return [sentences[0]!, sentences[1]!, sentences.slice(2).join(" ")];
+}
+
 export function AiInsightCard({
   incident,
   rootAlertHref,
   showHeader = true,
 }: AiInsightCardProps) {
   const hasAi = Boolean(incident.explanationAi);
-  const rawText = incident.explanationAi ?? incident.explanationTemplate;
-  const paragraphs = parseParagraphs(rawText);
+  const paragraphs = hasAi
+    ? parseParagraphs(incident.explanationAi)
+    : splitTemplate(incident.explanationTemplate);
 
   const defaultRootHref = `/incidents/${encodeURIComponent(
     incident.id
@@ -64,19 +62,16 @@ export function AiInsightCard({
     <div className="space-y-4">
       {showHeader && (
         <div>
-          <SectionLabel>WHAT THE AI WOULD TELL THE TEAM</SectionLabel>
+          <SectionLabel>INCIDENT SUMMARY</SectionLabel>
           <h2 className="mt-1 text-2xl font-bold tracking-tight text-heading">
-            AI-generated incident summary
+            What happened and who should look first
           </h2>
         </div>
       )}
 
-      {/* Two-column responsive layout: 2/3 left white card, 1/3 right dark panel */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        {/* Left card: approximately two-thirds width */}
         <section className="flex flex-col justify-between rounded-xl border border-line bg-surface p-6 shadow-xs lg:col-span-2 space-y-5">
           <div className="space-y-4">
-            {/* Header: Bell icon, title, tag, model */}
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line pb-4">
               <div className="flex items-center gap-2.5">
                 <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent">
@@ -122,33 +117,9 @@ export function AiInsightCard({
                     </span>
                   )}
                 </div>
-              ) : (
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="inline-flex items-center rounded-full bg-chip px-2.5 py-0.5 text-xs font-medium text-heading border border-line">
-                    Rule-based summary
-                  </span>
-                  <span className="text-xs text-muted">
-                    AI explanation not generated yet for this incident.
-                  </span>
-                </div>
-              )}
+              ) : null}
             </div>
 
-            {/* Fact chips: Site, Time in IST, Alerts count */}
-            <div className="flex flex-wrap items-center gap-2">
-              <Chip className="font-bold">Site {incident.site}</Chip>
-              <Chip>
-                {dateFormat.format(incident.startedAt)},{" "}
-                {timeFormat.format(incident.startedAt)} –{" "}
-                {timeFormat.format(incident.endedAt)} IST
-              </Chip>
-              <Chip>{incident.memberCount} alerts</Chip>
-              {Boolean(incident.repeatTotal && incident.repeatTotal > 0) && (
-                <Chip>{incident.repeatTotal} repeats removed</Chip>
-              )}
-            </div>
-
-            {/* Paragraphs body */}
             <div className="space-y-3 pt-1">
               {paragraphs.length > 0 ? (
                 paragraphs.map((p, idx) => (
@@ -163,7 +134,6 @@ export function AiInsightCard({
               )}
             </div>
 
-            {/* Root alert citation link */}
             {incident.rootAlertId && (
               <div className="pt-1">
                 <a
@@ -178,7 +148,6 @@ export function AiInsightCard({
             )}
           </div>
 
-          {/* Divider and Footer */}
           <div className="border-t border-line pt-4">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
               <div>
@@ -192,7 +161,7 @@ export function AiInsightCard({
 
               <div>
                 <dt className="text-xs font-semibold uppercase tracking-wider text-muted">
-                  Supporting teams
+                  Potential supporting teams
                 </dt>
                 <dd className="mt-1 text-sm font-semibold text-heading">
                   {incident.supportingTeams || "None"}
@@ -216,7 +185,6 @@ export function AiInsightCard({
           </div>
         </section>
 
-        {/* Right dark panel: approximately one-third width */}
         <aside className="flex flex-col justify-between rounded-xl bg-panel p-6 text-on-panel border border-panel shadow-xs lg:col-span-1">
           <div>
             <div className="flex items-center gap-3">
@@ -253,26 +221,12 @@ export function AiInsightCard({
               Resolver teams remain in control of every decision.
             </p>
 
-            <ul className="mt-5 space-y-2.5 border-t border-line/20 pt-4 text-xs text-on-panel-muted">
-              <li className="flex items-start gap-2">
-                <span className="font-bold text-accent">•</span>
-                <span>Uses only the facts on this page.</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="font-bold text-accent">•</span>
-                <span>IP addresses and emails are hidden before sending.</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="font-bold text-accent">•</span>
-                <span>Free model via OpenRouter.</span>
-              </li>
-            </ul>
           </div>
 
           <div className="mt-6 border-t border-line/20 pt-3">
             <span className="inline-flex items-center gap-1.5 text-[11px] text-on-panel-muted">
               <span className="size-1.5 rounded-full bg-accent" />
-              <span>Shadow mode: human review required</span>
+              <span>Human review required</span>
             </span>
           </div>
         </aside>
