@@ -1,64 +1,89 @@
 import Link from "next/link";
-
-import { ConfidenceChip } from "@/components/incidents/confidence-chip";
 import type { listIncidents } from "@/server/db/incidents-queries";
 
 type IncidentItem = Awaited<ReturnType<typeof listIncidents>>["items"][number];
 
-const dateTime = new Intl.DateTimeFormat("en-IN", {
+const timeFormat = new Intl.DateTimeFormat("en-IN", {
+  timeZone: "Asia/Kolkata",
+  hour: "2-digit",
+  minute: "2-digit",
+  hour12: false,
+});
+
+const dateFormat = new Intl.DateTimeFormat("en-IN", {
   timeZone: "Asia/Kolkata",
   day: "2-digit",
   month: "short",
-  hour: "2-digit",
-  minute: "2-digit",
-  hour12: false,
 });
 
-const time = new Intl.DateTimeFormat("en-IN", {
-  timeZone: "Asia/Kolkata",
-  hour: "2-digit",
-  minute: "2-digit",
-  hour12: false,
-});
+function probableCause(item: IncidentItem): string {
+  const match = item.explanationTemplate?.match(/most upstream alert was \S+ \(([^)]+)\)/);
+  if (match?.[1]) {
+    const text = match[1].trim();
+    return text.charAt(0).toUpperCase() + text.slice(1);
+  }
+  return item.rootSubject ?? "Not identified";
+}
 
-function shorten(text: string | null, max = 90) {
-  if (!text) return "–";
-  return text.length > max ? `${text.slice(0, max - 1)}…` : text;
+const CONFIDENCE_DOT: Record<string, { dot: string; label: string }> = {
+  high: { dot: "bg-accent", label: "High confidence" },
+  medium: { dot: "bg-heading", label: "Medium confidence" },
+  low: { dot: "bg-muted/50", label: "Low confidence" },
+};
+
+function ConfidenceDot({ confidence }: { confidence: string | null }) {
+  const c = CONFIDENCE_DOT[(confidence ?? "low").toLowerCase()] ?? CONFIDENCE_DOT.low!;
+  return (
+    <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-line px-2.5 py-1 text-[11px] font-semibold text-heading">
+      <span className={`size-2 rounded-full ${c.dot}`} aria-hidden="true" />
+      {c.label}
+    </span>
+  );
 }
 
 export function IncidentCard({ item }: { item: IncidentItem }) {
   return (
     <Link
       href={`/incidents/${encodeURIComponent(item.id)}`}
-      className="flex flex-col gap-3 rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition hover:border-blue-400 hover:shadow-md"
+      className="group relative flex flex-col overflow-hidden rounded-xl border border-line bg-surface p-5 shadow-xs transition hover:border-muted/60 hover:shadow-md focus:outline-none"
     >
-      <div className="flex items-start justify-between gap-2">
+      <div className="flex-1">
+      <div className="flex items-start justify-between gap-3">
         <div>
-          <div className="font-semibold text-gray-900">{item.site}</div>
-          <div className="text-sm text-gray-500">
-            {dateTime.format(item.startedAt)} – {time.format(item.endedAt)} IST
-          </div>
+          <p className="text-lg font-bold text-heading">{item.site}</p>
+          <p className="mt-0.5 text-xs text-muted">
+            {dateFormat.format(item.startedAt)} · {timeFormat.format(item.startedAt)} – {timeFormat.format(item.endedAt)} IST
+          </p>
         </div>
-        <div className="flex items-center gap-1">
-          <span className="rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700 ring-1 ring-blue-200">
-            Probable
-          </span>
-          <ConfidenceChip confidence={item.confidence} />
+        <ConfidenceDot confidence={item.confidence} />
+      </div>
+
+      <div className="mt-4 flex items-baseline gap-2">
+        <span className="text-3xl font-bold tracking-tight text-heading">{item.memberCount}</span>
+        <span className="text-sm text-body">alerts</span>
+        {item.repeatTotal > 0 && (
+          <span className="text-xs text-muted">+{item.repeatTotal} {item.repeatTotal === 1 ? "repeat" : "repeats"}</span>
+        )}
+      </div>
+
+      <p className="mt-3 text-sm text-body line-clamp-2">
+        <span className="font-semibold text-heading">Probable cause: </span>
+        {probableCause(item)}
+      </p>
+      </div>
+
+      <div className="mt-5 flex items-end justify-between gap-3 border-t border-line pt-4">
+        <div>
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-muted">Recommended team</p>
+          <p className="mt-0.5 text-sm font-bold text-heading">{item.primaryTeam ?? "Needs triage"}</p>
         </div>
-      </div>
-
-      <div className="text-sm text-gray-700">
-        <span className="text-2xl font-bold text-gray-900">{item.memberCount}</span> alerts
-        {item.repeatTotal > 0 && <span className="text-gray-500"> (+{item.repeatTotal} repeats)</span>}
-      </div>
-
-      <div className="text-sm text-gray-700">
-        Teams today: <span className="font-medium">{item.teamsToday ?? 0}</span> → Recommended:{" "}
-        <span className="font-medium">{item.primaryTeam ?? "Needs triage"}</span>
-      </div>
-
-      <div className="truncate rounded bg-gray-50 px-2 py-1 font-mono text-xs text-gray-600" title={item.rootSubject ?? ""}>
-        {shorten(item.rootSubject)}
+        <span className="inline-flex items-center gap-1.5 rounded-lg bg-accent px-3 py-2 text-xs font-semibold text-white shadow-xs transition duration-200 lg:translate-y-2 lg:opacity-0 lg:group-hover:translate-y-0 lg:group-hover:opacity-100 lg:group-focus-visible:translate-y-0 lg:group-focus-visible:opacity-100">
+          <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3z" />
+          </svg>
+          View AI summary
+          <span aria-hidden="true">→</span>
+        </span>
       </div>
     </Link>
   );

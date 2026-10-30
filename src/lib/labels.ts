@@ -21,7 +21,28 @@ const CONFIDENCE_LABELS: Record<string, string> = {
   low: "Low",
 };
 
-function humanize(value: string) {
+const DEVICE_TYPE_LABELS: Record<string, string> = {
+  sdwan_firewall: "Firewall / SD-WAN",
+  core_switch: "Core switch",
+  access_switch: "Access switch",
+  access_point: "Access point",
+  windows_server: "Windows server",
+  linux_server: "Linux server",
+  storage: "Storage",
+  other: "Other device",
+};
+
+const SYMPTOM_LABELS: Record<string, string> = {
+  link_down: "Link down",
+  unreachable: "Unreachable",
+  restart: "Restarted",
+  agent_down: "Monitoring agent down",
+  resource: "CPU, memory or SNMP",
+  link_up: "Link back up",
+  other: "Other problem",
+};
+
+export function humanize(value: string) {
   const text = value.replace(/_/g, " ").toLowerCase();
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
@@ -43,4 +64,26 @@ export function reasonLabel(value: string) {
 export function confidenceLabel(value: string | null | undefined) {
   if (!value) return "—";
   return CONFIDENCE_LABELS[value.toLowerCase()] ?? humanize(value);
+}
+
+export function deviceTypeLabel(value: string | null | undefined): string {
+  if (!value) return "—";
+  const key = value.toLowerCase().trim();
+  return DEVICE_TYPE_LABELS[key] ?? humanize(value);
+}
+
+export function symptomLabel(value: string | null | undefined): string {
+  if (!value) return "—";
+  const key = value.toLowerCase().trim();
+  return SYMPTOM_LABELS[key] ?? humanize(value);
+}
+
+export function teamLabel(value: string | null | undefined): string {
+  if (!value) return "—";
+  return value;
+}
+
+export function statusLabel(value: string | null | undefined): string {
+  if (!value) return "—";
+  return humanize(value);
 }

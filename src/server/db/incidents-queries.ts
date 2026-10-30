@@ -3,6 +3,7 @@ import { alias } from "drizzle-orm/pg-core";
 
 import { db } from "@/server/db";
 import { alertEvent, incident, incidentFeedback, incidentMember } from "@/server/db/incidents-schema";
+import { FEATURED_IDS } from "@/server/services/explain.service";
 
 export type IncidentFilters = {
   site?: string;
@@ -73,6 +74,42 @@ export async function listTeams() {
     .where(isNotNull(incident.primaryTeam))
     .orderBy(asc(incident.primaryTeam));
   return rows.map((r) => r.team as string);
+}
+
+export async function listAiCandidateIncidents() {
+  const candidateIdsQuery = sql`
+    SELECT id FROM (
+      (SELECT id FROM incident ORDER BY member_count DESC, id LIMIT 20)
+      UNION
+      SELECT id FROM incident WHERE id IN (${sql.join(FEATURED_IDS.map((id) => sql`${id}`), sql`, `)})
+    ) x
+  `;
+
+  const rows = await db
+    .select({
+      id: incident.id,
+      site: incident.site,
+      startedAt: incident.startedAt,
+      endedAt: incident.endedAt,
+      memberCount: incident.memberCount,
+      repeatTotal: incident.repeatTotal,
+      rootAlertId: incident.rootAlertId,
+      rootSubject: alertEvent.subject,
+      primaryTeam: incident.primaryTeam,
+      supportingTeams: incident.supportingTeams,
+      confidence: incident.confidence,
+      confidenceReason: incident.confidenceReason,
+      explanationTemplate: incident.explanationTemplate,
+      explanationAi: incident.explanationAi,
+      aiModel: incident.aiModel,
+      hasAi: sql<boolean>`${incident.explanationAi} IS NOT NULL`,
+    })
+    .from(incident)
+    .leftJoin(alertEvent, eq(alertEvent.alertId, incident.rootAlertId))
+    .where(sql`${incident.id} IN (${candidateIdsQuery})`)
+    .orderBy(desc(sql`${incident.explanationAi} IS NOT NULL`), desc(incident.memberCount), asc(incident.id));
+
+  return rows;
 }
 
 export async function getIncident(id: string) {

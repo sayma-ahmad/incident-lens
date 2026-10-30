@@ -5,9 +5,9 @@ import { useState } from "react";
 type Verdict = "correct" | "wrong" | "split";
 
 const OPTIONS: { verdict: Verdict; label: string; style: string }[] = [
-  { verdict: "correct", label: "Correct", style: "bg-green-600 hover:bg-green-700" },
-  { verdict: "wrong", label: "Wrong", style: "bg-red-600 hover:bg-red-700" },
-  { verdict: "split", label: "Should be split", style: "bg-amber-600 hover:bg-amber-700" },
+  { verdict: "correct", label: "Correct", style: "bg-accent text-white hover:bg-accent/90 focus:ring-2 focus:ring-accent" },
+  { verdict: "wrong", label: "Wrong", style: "bg-panel text-on-panel hover:bg-panel/90 focus:ring-2 focus:ring-panel" },
+  { verdict: "split", label: "Should be split", style: "border border-line bg-surface text-heading hover:bg-chip focus:ring-2 focus:ring-accent" },
 ];
 
 export function FeedbackForm({ incidentId }: { incidentId: string }) {
@@ -40,7 +40,7 @@ export function FeedbackForm({ incidentId }: { incidentId: string }) {
         maxLength={1000}
         rows={2}
         placeholder="Optional note, e.g. which alerts do not belong"
-        className="w-full rounded border border-gray-300 px-3 py-2 text-sm"
+        className="w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm text-body outline-none focus:border-accent focus:ring-1 focus:ring-accent"
       />
       <div className="flex flex-wrap items-center gap-2">
         {OPTIONS.map((o) => (
@@ -49,18 +49,18 @@ export function FeedbackForm({ incidentId }: { incidentId: string }) {
             type="button"
             disabled={state === "saving"}
             onClick={() => submit(o.verdict)}
-            className={`rounded px-4 py-1.5 text-sm font-medium text-white disabled:opacity-50 ${o.style}`}
+            className={`min-h-[40px] rounded-lg px-4 py-2 text-sm font-semibold transition disabled:opacity-50 ${o.style}`}
           >
             {o.label}
           </button>
         ))}
-        {state === "saving" && <span className="text-sm text-gray-500">Saving…</span>}
+        {state === "saving" && <span className="text-sm text-muted">Saving…</span>}
         {state === "saved" && (
-          <span className="text-sm font-medium text-green-700">
+          <span className="text-sm font-semibold text-accent">
             Thanks, saved ({OPTIONS.find((o) => o.verdict === saved)?.label}).
           </span>
         )}
-        {state === "error" && <span className="text-sm font-medium text-red-700">Could not save. Please try again.</span>}
+        {state === "error" && <span className="text-sm font-medium text-accent">Could not save. Please try again.</span>}
       </div>
     </div>
   );

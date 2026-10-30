@@ -1,6 +1,6 @@
 import { Elysia, t } from "elysia";
 
-import { addFeedback, getIncident, getScorecard, listIncidents } from "@/server/db/incidents-queries";
+import { addFeedback, getIncident, getScorecard, listAiCandidateIncidents, listIncidents } from "@/server/db/incidents-queries";
 import { explainIncidents } from "@/server/services/explain.service";
 
 export const incidentsRoutes = new Elysia()
@@ -56,4 +56,5 @@ export const incidentsRoutes = new Elysia()
       }),
     },
   )
+  .get("/ai-insights", () => listAiCandidateIncidents())
   .get("/scorecard", () => getScorecard());
