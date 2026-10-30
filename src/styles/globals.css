@@ -11,6 +11,18 @@
   --color-surface: #FFFFFF;
   --color-on-panel: #FFFFFF;
   --color-on-panel-muted: #C5CAD1;
+  --animate-summary-in: summary-in 0.45s ease-out both;
+
+  @keyframes summary-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 }
 
 @layer base {

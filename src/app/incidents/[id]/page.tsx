@@ -5,9 +5,9 @@ import {
   Chip,
   ConfidenceBadge,
   Disclosure,
-  ProbableNotice,
 } from "@/components/ui";
 import { AiInsightCard } from "@/components/ai/ai-insight-card";
+import { SummaryReveal } from "@/components/ai/summary-reveal";
 import { FeedbackForm } from "@/components/incidents/feedback-form";
 import { IncidentTimeline } from "@/components/incidents/incident-timeline";
 import { getIncident } from "@/server/db/incidents-queries";
@@ -73,7 +73,6 @@ export default async function IncidentPage({
 
   return (
     <main className="mx-auto max-w-7xl p-6 space-y-6">
-      {/* 1. Header */}
       <div>
         <Link
           href="/incidents"
@@ -84,19 +83,14 @@ export default async function IncidentPage({
         </Link>
 
         <div className="mt-4">
-          <ProbableNotice />
-        </div>
-
-        <div className="mt-4">
           <p className="font-mono text-xs font-semibold text-muted">
             {incident.id}
           </p>
           <h1 className="mt-1 text-2xl font-bold text-heading sm:text-3xl">
-            Probable incident at {incident.site}
+            Probable {incident.primaryTeam === "RID-Network" ? "network " : ""}incident at {incident.site}
           </h1>
         </div>
 
-        {/* Chips row */}
         <div className="mt-3 flex flex-wrap items-center gap-2">
           <Chip className="font-bold">Site {incident.site}</Chip>
           <Chip>
@@ -114,22 +108,17 @@ export default async function IncidentPage({
               Probable
             </span>
             <ConfidenceBadge confidence={incident.confidence} />
-            {incident.confidenceReason && (
-              <span className="text-xs text-muted hidden sm:inline">
-                ({incident.confidenceReason})
-              </span>
-            )}
           </div>
         </div>
       </div>
 
-      {/* 2. Shared AI explanation card */}
-      <AiInsightCard
-        incident={incident}
-        rootAlertHref={`#alert-${incident.rootAlertId}`}
-      />
+      <SummaryReveal site={incident.site} alerts={incident.memberCount}>
+        <AiInsightCard
+          incident={incident}
+          rootAlertHref={`#alert-${incident.rootAlertId}`}
+        />
+      </SummaryReveal>
 
-      {/* 3. How this incident was formed */}
       <section className="rounded-xl border border-line bg-surface p-6 shadow-xs">
         <h2 className="text-lg font-semibold text-heading">
           How this incident was formed
@@ -155,7 +144,8 @@ export default async function IncidentPage({
               <strong className="font-semibold text-heading">
                 {incident.site}
               </strong>{" "}
-              within a 15-minute sliding window.
+              between {timeWindowFormat.format(incident.startedAt)} and{" "}
+              {timeWindowFormat.format(incident.endedAt)} IST, each less than 15 minutes after the previous one.
             </p>
           </div>
 
@@ -198,7 +188,6 @@ export default async function IncidentPage({
         </div>
       </section>
 
-      {/* 4. Visual timeline */}
       <section className="rounded-xl border border-line bg-surface p-6 shadow-xs">
         <div className="mb-4">
           <h2 className="text-lg font-semibold text-heading">Incident timeline</h2>
@@ -209,7 +198,6 @@ export default async function IncidentPage({
         <IncidentTimeline members={incident.members} />
       </section>
 
-      {/* 5. Teams */}
       <section className="rounded-xl border border-line bg-surface p-6 shadow-xs">
         <h2 className="text-lg font-semibold text-heading">
           Teams & dispatch recommendation
@@ -269,11 +257,10 @@ export default async function IncidentPage({
         </div>
       </section>
 
-      {/* 6. Feedback */}
       <section className="rounded-xl border border-line bg-surface p-6 shadow-xs">
         <h2 className="text-lg font-semibold text-heading">Is this grouping right?</h2>
         <p className="mt-0.5 text-xs text-muted">
-          Your answer is stored for the scorecard. Nothing is sent to ServiceNow.
+          Your answer is stored for the scorecard.
         </p>
         <div className="mt-4">
           <FeedbackForm incidentId={incident.id} />
@@ -298,7 +285,6 @@ export default async function IncidentPage({
         )}
       </section>
 
-      {/* 7. All alerts table */}
       <Disclosure
         title={`Show all ${incident.members.length} alerts as a table`}
         className="shadow-xs"
