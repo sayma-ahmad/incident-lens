@@ -2,13 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import {
-  PageHeader,
-  Card,
-  Chip,
-  Disclosure,
-  EmptyState,
-} from "@/components/ui";
+import { PageHeader, Card, Chip, Disclosure, EmptyState, SelectField, DateField } from "@/components/ui";
 import { matchMethodLabel } from "@/lib/labels";
 
 type Filters = {
@@ -189,7 +183,6 @@ export default function TicketsPage() {
         ]}
       />
 
-      {/* Filter panel */}
       <form
         onSubmit={applyFilters}
         className="rounded-xl border border-line bg-surface p-5 shadow-xs space-y-4"
@@ -200,19 +193,7 @@ export default function TicketsPage() {
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <label className="block text-sm">
-            <span className="mb-1.5 block font-medium text-body">Source</span>
-            <select
-              value={filters.source}
-              onChange={(e) => updateFilter("source", e.target.value)}
-              className="w-full rounded-lg border border-line bg-surface px-3 py-2 text-heading outline-none focus:border-accent focus:ring-1 focus:ring-accent"
-            >
-              <option value="">All sources</option>
-              <option value="Alfa">AlfaNow</option>
-              <option value="MSOLVE Incident">MSOLVE Incident</option>
-              <option value="MSOLVE Service Request">MSOLVE Service Request</option>
-            </select>
-          </label>
+          <SelectField label="Source" value={filters.source} onChange={(v) => updateFilter("source", v)} options={[{ value: "", label: "All sources" }, { value: "Alfa", label: "AlfaNow" }, { value: "MSOLVE Incident", label: "MSOLVE Incident" }, { value: "MSOLVE Service Request", label: "MSOLVE Service Request" }]} />
 
           <label className="block text-sm">
             <span className="mb-1.5 block font-medium text-body">Team / Department</span>
@@ -234,25 +215,9 @@ export default function TicketsPage() {
             />
           </label>
 
-          <label className="block text-sm">
-            <span className="mb-1.5 block font-medium text-body">Created from</span>
-            <input
-              type="date"
-              value={filters.from}
-              onChange={(e) => updateFilter("from", e.target.value)}
-              className="w-full rounded-lg border border-line bg-surface px-3 py-2 text-heading outline-none focus:border-accent focus:ring-1 focus:ring-accent"
-            />
-          </label>
+          <DateField label="Created from" value={filters.from} onChange={(v) => updateFilter("from", v)} />
 
-          <label className="block text-sm">
-            <span className="mb-1.5 block font-medium text-body">Created through</span>
-            <input
-              type="date"
-              value={filters.to}
-              onChange={(e) => updateFilter("to", e.target.value)}
-              className="w-full rounded-lg border border-line bg-surface px-3 py-2 text-heading outline-none focus:border-accent focus:ring-1 focus:ring-accent"
-            />
-          </label>
+          <DateField label="Created through" value={filters.to} onChange={(v) => updateFilter("to", v)} />
 
           <label className="flex items-center gap-2 self-end pb-2 text-sm text-body cursor-pointer">
             <input
@@ -282,7 +247,6 @@ export default function TicketsPage() {
         </div>
       </form>
 
-      {/* Active filter chips & results header */}
       <div className="space-y-3">
         {hasActiveFilters && (
           <div className="flex flex-wrap items-center gap-2 text-xs">
@@ -395,7 +359,6 @@ export default function TicketsPage() {
         </div>
       </div>
 
-      {/* Error state */}
       {error && (
         <EmptyState
           title="Error loading tickets"
@@ -412,7 +375,6 @@ export default function TicketsPage() {
         />
       )}
 
-      {/* Compact ticket cards view (Primary View) */}
       {!error && (
         <div className="space-y-4">
           {loading ? (
@@ -481,7 +443,6 @@ export default function TicketsPage() {
                         )}
                       </div>
 
-                      {/* One-line subject with toggleable complete subject */}
                       <div className="text-sm text-body">
                         <p
                           className={isExpanded ? "break-words" : "line-clamp-1"}
@@ -525,7 +486,6 @@ export default function TicketsPage() {
                         </div>
                       )}
 
-                      {/* Linked ticket chip */}
                       {hasLink && (
                         <div className="pt-1">
                           <Link
@@ -553,7 +513,6 @@ export default function TicketsPage() {
             </div>
           )}
 
-          {/* Pagination controls */}
           <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-line bg-surface p-4 shadow-xs">
             <p className="text-sm text-muted">
               {pagination && pagination.total > 0
@@ -588,7 +547,6 @@ export default function TicketsPage() {
             </div>
           </div>
 
-          {/* Complete table inside Disclosure */}
           <Disclosure
             title="Show as table"
             openLabel="Show as table"
@@ -596,23 +554,23 @@ export default function TicketsPage() {
             defaultOpen={false}
           >
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[1050px] border-collapse text-left text-sm">
+              <table className="w-full border-collapse text-left text-sm">
                 <thead className="bg-chip text-xs uppercase tracking-wide text-muted">
                   <tr>
-                    <th className="px-5 py-3 font-semibold">Ticket</th>
-                    <th className="px-5 py-3 font-semibold">Source</th>
-                    <th className="px-5 py-3 font-semibold">Created (IST)</th>
-                    <th className="px-5 py-3 font-semibold">Subject</th>
-                    <th className="px-5 py-3 font-semibold">Team</th>
-                    <th className="px-5 py-3 font-semibold">Status</th>
-                    <th className="px-5 py-3 font-semibold">Linked ticket</th>
-                    <th className="px-5 py-3 font-semibold">Match method</th>
+                    <th className="px-3 py-3 font-semibold">Ticket</th>
+                    <th className="px-3 py-3 font-semibold">Source</th>
+                    <th className="px-3 py-3 font-semibold">Created (IST)</th>
+                    <th className="px-3 py-3 font-semibold">Subject</th>
+                    <th className="px-3 py-3 font-semibold">Team</th>
+                    <th className="px-3 py-3 font-semibold">Status</th>
+                    <th className="px-3 py-3 font-semibold">Linked ticket</th>
+                    <th className="px-3 py-3 font-semibold">Match method</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-line">
                   {loading && (
                     <tr>
-                      <td colSpan={8} className="px-5 py-8 text-center text-muted">
+                      <td colSpan={8} className="px-3 py-8 text-center text-muted">
                         Loading tickets…
                       </td>
                     </tr>
@@ -620,7 +578,7 @@ export default function TicketsPage() {
 
                   {!loading && data.length === 0 && (
                     <tr>
-                      <td colSpan={8} className="px-5 py-8 text-center text-muted">
+                      <td colSpan={8} className="px-3 py-8 text-center text-muted">
                         No tickets match these filters.
                       </td>
                     </tr>
@@ -632,7 +590,7 @@ export default function TicketsPage() {
                         key={`table-${ticket.source}-${ticket.ticket_id}-${ticket.source_sheet ?? ""}-${index}`}
                         className="align-top hover:bg-chip/40 transition"
                       >
-                        <td className="whitespace-nowrap px-5 py-4">
+                        <td className="whitespace-nowrap px-3 py-4">
                           <Link
                             href={`/tickets/${encodeURIComponent(
                               ticket.ticket_id,
@@ -647,7 +605,7 @@ export default function TicketsPage() {
                             </span>
                           )}
                         </td>
-                        <td className="whitespace-nowrap px-5 py-4 text-body">
+                        <td className="whitespace-nowrap px-3 py-4 text-body">
                           {ticket.source}
                           {ticket.source_sheet && (
                             <span className="mt-1 block text-xs text-muted">
@@ -655,10 +613,10 @@ export default function TicketsPage() {
                             </span>
                           )}
                         </td>
-                        <td className="whitespace-nowrap px-5 py-4 text-body">
+                        <td className="whitespace-nowrap px-3 py-4 text-body">
                           {formatDate(ticket.created_on)}
                         </td>
-                        <td className="max-w-md px-5 py-4">
+                        <td className="max-w-xs px-3 py-4">
                           <p className="line-clamp-2 text-heading" title={ticket.subject || ""}>
                             {ticket.subject || "—"}
                           </p>
@@ -668,15 +626,15 @@ export default function TicketsPage() {
                             </span>
                           )}
                         </td>
-                        <td className="px-5 py-4 text-body">
+                        <td className="px-3 py-4 text-body">
                           {ticket.team || "—"}
                         </td>
-                        <td className="px-5 py-4">
+                        <td className="px-3 py-4">
                           <span className="inline-flex rounded-full bg-chip px-2.5 py-1 text-xs font-medium text-heading">
                             {ticket.status || "Unknown"}
                           </span>
                         </td>
-                        <td className="px-5 py-4 text-body">
+                        <td className="px-3 py-4 text-body">
                           {ticket.linked_ticket_id ? (
                             <Link
                               href={`/tickets/${encodeURIComponent(ticket.linked_ticket_id)}`}
@@ -688,7 +646,7 @@ export default function TicketsPage() {
                             "—"
                           )}
                         </td>
-                        <td className="px-5 py-4 text-xs text-muted">
+                        <td className="px-3 py-4 text-xs text-muted">
                           {matchMethodLabel(ticket.match_method)}
                         </td>
                       </tr>
