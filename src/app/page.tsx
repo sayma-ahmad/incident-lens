@@ -9,10 +9,17 @@ import {
   StatTile,
   ConfidenceBadge,
   EmptyState,
+  IconCircle,
 } from "@/components/ui";
 
 type DataReport = {
   sourceCounts: { source: string; row_count: number }[];
+  distinctTicketSummary?: {
+    distinct_msolve_incidents: number;
+    distinct_msolve_srs: number;
+    distinct_alfa_tickets: number;
+    total_distinct_tickets: number;
+  };
   matchesByMethod: {
     match_method: string;
     confidence: string;
@@ -200,6 +207,8 @@ export default function HomePage() {
     ? dataReport.sourceCounts.reduce((acc, item) => acc + item.row_count, 0)
     : null;
 
+  const distinctTickets = dataReport?.distinctTicketSummary?.total_distinct_tickets ?? null;
+
   const alfaTickets = dataReport?.sourceCounts
     ? dataReport.sourceCounts
         .filter((item) => !item.source.startsWith("MSOLVE"))
@@ -220,6 +229,13 @@ export default function HomePage() {
         )
         .reduce((acc, m) => acc + m.links, 0)
     : null;
+
+  function scrollToModules() {
+    const el = document.getElementById("modules");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+    }
+  }
 
   function scrollToHowItWorks() {
     const el = document.getElementById("how-it-works");
@@ -256,6 +272,14 @@ export default function HomePage() {
 
             <button
               type="button"
+              onClick={scrollToModules}
+              className="inline-flex min-h-[40px] items-center justify-center rounded-lg border border-line/20 bg-surface/10 px-5 py-2.5 text-sm font-semibold text-on-panel backdrop-blur-xs transition hover:bg-surface/20 focus:outline-none focus:ring-2 focus:ring-accent"
+            >
+              Explore 6 modules
+            </button>
+
+            <button
+              type="button"
               onClick={scrollToHowItWorks}
               className="inline-flex min-h-[40px] items-center justify-center rounded-lg border border-line/20 bg-surface/10 px-5 py-2.5 text-sm font-semibold text-on-panel backdrop-blur-xs transition hover:bg-surface/20 focus:outline-none focus:ring-2 focus:ring-accent"
             >
@@ -279,7 +303,7 @@ export default function HomePage() {
             message="Could not load live ticket and baseline counts from the database report APIs."
           />
         ) : (
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
             <StatTile
               value={
                 loading
@@ -290,10 +314,21 @@ export default function HomePage() {
               }
               label={
                 totalTickets != null
-                  ? `${totalTickets.toLocaleString("en-IN")} tickets in October across MSOLVE and AlfaNow`
-                  : "Tickets in October across MSOLVE and AlfaNow"
+                  ? `${totalTickets.toLocaleString("en-IN")} total ticket records`
+                  : "Total ticket records"
               }
               explanation="Aggregated across ServiceNow incidents, service requests, and AlfaNow records"
+            />
+            <StatTile
+              value={
+                loading
+                  ? "…"
+                  : distinctTickets != null
+                  ? distinctTickets.toLocaleString("en-IN")
+                  : "59,896"
+              }
+              label="Distinct ticket count"
+              explanation="De-duplicated unique ticket IDs across ServiceNow and AlfaNow"
             />
             <StatTile
               value={
@@ -342,6 +377,148 @@ export default function HomePage() {
           Engineers see each alert separately, often in two tools, and have to
           work out by hand which ones belong together.
         </p>
+      </section>
+
+      {/* 6 Core Modules Workspace Grid */}
+      <section id="modules" className="space-y-8 scroll-mt-24">
+        <div>
+          <SectionLabel>WORKSPACE & MODULES</SectionLabel>
+          <h2 className="mt-1 text-2xl sm:text-3xl font-bold tracking-tight text-heading">
+            Six core capabilities for alert analysis and incident intelligence
+          </h2>
+          <p className="mt-2 text-sm sm:text-base text-body max-w-3xl leading-relaxed">
+            Navigate across the complete Incident Lens ecosystem. All six sections provide dedicated tools to inspect raw data, analyze alert patterns, verify cross-tool links, establish baselines, correlate incidents, and evaluate noise compression scorecards.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
+          {[
+            {
+              number: "01",
+              label: "SOURCE DATA",
+              title: "Tickets",
+              description:
+                "Inspect raw ticket records from MSOLVE (ServiceNow) and AlfaNow with granular text, date, and status filtering.",
+              href: "/tickets",
+              action: "Explore tickets",
+              icon: "bell" as const,
+              badge:
+                totalTickets != null
+                  ? `${totalTickets.toLocaleString("en-IN")} total tickets`
+                  : "Source tickets",
+            },
+            {
+              number: "02",
+              label: "ALERT INTELLIGENCE",
+              title: "Alert Analysis",
+              description:
+                "Granular inspection of monitoring alert records, explicit device hostnames, interface identifiers, and verified team routing.",
+              href: "/alert-correlation",
+              action: "Analyze alerts",
+              icon: "layers" as const,
+              badge:
+                monitoringAlerts != null
+                  ? `${monitoringAlerts.toLocaleString("en-IN")} monitoring alerts`
+                  : "55,042 alerts across 239 sites",
+            },
+            {
+              number: "03",
+              label: "CROSS-TOOL MAPPING",
+              title: "Data Check",
+              description:
+                "Review exact and candidate links between MSOLVE and AlfaNow records, verify correlation ID integrity, and inspect unmatched items.",
+              href: "/reports/data",
+              action: "Check data mapping",
+              icon: "link" as const,
+              badge:
+                exactLinksCount != null
+                  ? `${exactLinksCount.toLocaleString("en-IN")} verified links`
+                  : "Correlation ID matching",
+            },
+            {
+              number: "04",
+              label: "VOLUME & TIMING",
+              title: "Baseline",
+              description:
+                "Explore daily volume distributions, busiest 15-minute periods, repeat alert frequencies, and department workload patterns.",
+              href: "/reports/baseline",
+              action: "View baseline report",
+              icon: "clock" as const,
+              badge:
+                busiestCount != null
+                  ? `Peak burst: ${busiestCount.toLocaleString("en-IN")} alerts`
+                  : "Historical baseline",
+            },
+            {
+              number: "05",
+              label: "CORRELATION WORKSPACE",
+              title: "Incidents",
+              description:
+                "Examine alerts clustered by physical site and time window into singular actionable incidents with root-cause triggers and team routing.",
+              href: "/incidents",
+              action: "Open incidents",
+              icon: "shield-person" as const,
+              badge:
+                grouped?.total != null
+                  ? `${grouped.total.toLocaleString("en-IN")} grouped incidents`
+                  : "Site incident clusters",
+            },
+            {
+              number: "06",
+              label: "NOISE COMPRESSION",
+              title: "Scorecard",
+              description:
+                "Review alert volume compression, repeat alert elimination, storm suppression ratios, and routing team agreement.",
+              href: "/scorecard",
+              action: "Inspect scorecard",
+              icon: "chart" as const,
+              badge:
+                scorecard?.compression?.storm_ratio != null
+                  ? `${Math.round(scorecard.compression.storm_ratio)}:1 storm suppression`
+                  : "Compression scorecard",
+            },
+          ].map((m) => (
+            <Card
+              key={m.href}
+              className="group flex flex-col justify-between p-6 hover:border-accent hover:shadow-md transition-all duration-200"
+            >
+              <div>
+                <div className="flex items-center justify-between gap-3 mb-4">
+                  <span className="text-[11px] font-bold tracking-widest text-accent uppercase font-mono">
+                    SECTION {m.number} · {m.label}
+                  </span>
+                  <IconCircle
+                    icon={m.icon}
+                    size="sm"
+                    className="bg-accent/10 text-accent group-hover:bg-accent group-hover:text-white transition-colors"
+                  />
+                </div>
+
+                <h3 className="text-xl font-bold text-heading group-hover:text-accent transition-colors">
+                  {m.title}
+                </h3>
+
+                <p className="mt-2.5 text-sm text-body leading-relaxed">
+                  {m.description}
+                </p>
+              </div>
+
+              <div className="mt-6 pt-4 border-t border-line flex items-center justify-between gap-2">
+                <span className="text-xs font-semibold text-muted font-mono truncate">
+                  {m.badge}
+                </span>
+
+                <Link
+                  href={m.href}
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-accent group-hover:underline shrink-0"
+                >
+                  <span>{m.action}</span>
+                  <span aria-hidden="true">→</span>
+                </Link>
+              </div>
+            </Card>
+          ))}
+        </div>
       </section>
 
       <section id="how-it-works" className="space-y-8 scroll-mt-24">

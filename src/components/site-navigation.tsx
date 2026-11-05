@@ -16,6 +16,8 @@ function LogoMark({ className = "size-8" }: { className?: string }) {
 
 const NAVIGATION_LINKS = [
   { label: "Tickets", href: "/tickets" },
+  { label: "Alert Analysis", href: "/alert-correlation" },
+  { label: "Shipping", href: "/shipping" },
   { label: "Data check", href: "/reports/data" },
   { label: "Baseline", href: "/reports/baseline" },
   { label: "Incidents", href: "/incidents" },
@@ -30,6 +32,14 @@ const GLOSSARY_ITEMS = [
   {
     term: "Alert",
     definition: "An automatic AlfaNow ticket raised by monitoring when a device has a problem.",
+  },
+  {
+    term: "Alert Analysis",
+    definition: "Detailed inspection of monitoring alert events, explicit device hostnames, interface identifiers, and confirmed team routing rules.",
+  },
+  {
+    term: "Shipping",
+    definition: "Dedicated operations and shipping view for real-time alert correlation and dispatch.",
   },
   {
     term: "Link / copy",
