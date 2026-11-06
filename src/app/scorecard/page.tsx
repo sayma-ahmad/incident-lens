@@ -158,7 +158,7 @@ export default async function ScorecardPage() {
   return (
     <main className="mx-auto max-w-7xl p-6 space-y-10">
       <PageHeader
-        sectionLabel="STEP 6 · RESULTS"
+        sectionLabel="SCORECARD · NOISE COMPRESSION"
         title="Did it help?"
         description="What Incident Lens would have saved in October, compared with the targets we set."
         howToRead={[
