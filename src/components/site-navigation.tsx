@@ -16,9 +16,9 @@ function LogoMark({ className = "size-8" }: { className?: string }) {
 
 const NAVIGATION_LINKS = [
   { label: "Tickets", href: "/tickets" },
+  { label: "Data Check", href: "/reports/data" },
   { label: "Alert Analysis", href: "/alert-correlation" },
   { label: "Shipping", href: "/shipping" },
-  { label: "Data check", href: "/reports/data" },
   { label: "Baseline", href: "/reports/baseline" },
   { label: "Incidents", href: "/incidents" },
   { label: "Scorecard", href: "/scorecard" },

@@ -183,7 +183,7 @@ interface AlertAnalysisDashboardProps {
 }
 
 export function AlertAnalysisDashboard({
-  sectionLabel = "STEP 3.5 · ANALYSIS",
+  sectionLabel = "STEP 3 · ANALYZE",
   title = "Alert Analysis & Incident Correlation",
   description = "Inspect distinct alert tickets, execute iterative trial-and-error correlation threshold discovery, and identify upstream failure triggers across dependent network devices and physical sites.",
 }: AlertAnalysisDashboardProps) {

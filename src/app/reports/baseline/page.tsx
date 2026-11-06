@@ -162,7 +162,7 @@ export default function BaselineReportPage() {
   return (
     <main className="mx-auto max-w-7xl p-6 space-y-10">
       <PageHeader
-        sectionLabel="STEP 3 · BASELINE"
+        sectionLabel="BASELINE · VOLUME & TIMING"
         title="How noisy is it today?"
         description="The volume engineers face without Incident Lens: tickets per day, the busiest moments, and the most repeated subjects."
         howToRead={[

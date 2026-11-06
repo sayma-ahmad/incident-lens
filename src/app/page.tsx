@@ -409,20 +409,6 @@ export default function HomePage() {
             },
             {
               number: "02",
-              label: "ALERT INTELLIGENCE",
-              title: "Alert Analysis",
-              description:
-                "Granular inspection of monitoring alert records, explicit device hostnames, interface identifiers, and verified team routing.",
-              href: "/alert-correlation",
-              action: "Analyze alerts",
-              icon: "layers" as const,
-              badge:
-                monitoringAlerts != null
-                  ? `${monitoringAlerts.toLocaleString("en-IN")} monitoring alerts`
-                  : "55,042 alerts across 239 sites",
-            },
-            {
-              number: "03",
               label: "CROSS-TOOL MAPPING",
               title: "Data Check",
               description:
@@ -434,6 +420,20 @@ export default function HomePage() {
                 exactLinksCount != null
                   ? `${exactLinksCount.toLocaleString("en-IN")} verified links`
                   : "Correlation ID matching",
+            },
+            {
+              number: "03",
+              label: "ALERT INTELLIGENCE",
+              title: "Alert Analysis",
+              description:
+                "Granular inspection of monitoring alert records, explicit device hostnames, interface identifiers, and verified team routing.",
+              href: "/alert-correlation",
+              action: "Analyze alerts",
+              icon: "layers" as const,
+              badge:
+                monitoringAlerts != null
+                  ? `${monitoringAlerts.toLocaleString("en-IN")} monitoring alerts`
+                  : "55,042 alerts across 239 sites",
             },
             {
               number: "04",
@@ -525,11 +525,12 @@ export default function HomePage() {
         <div>
           <SectionLabel>HOW IT WORKS</SectionLabel>
           <h2 className="mt-1 text-2xl sm:text-3xl font-bold tracking-tight text-heading">
-            Four steps from raw tickets to clear explanations
+            Five steps from raw tickets to clear explanations
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-4 relative items-stretch">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5 relative items-stretch">
+          {/* Step 1: Read */}
           <div className="flex flex-col relative group">
             <Card className="flex flex-col flex-1 p-6 hover:border-accent transition">
               <div className="flex items-center justify-between mb-4">
@@ -557,7 +558,7 @@ export default function HomePage() {
               </div>
             </Card>
 
-            <div className="hidden md:flex absolute -right-3 top-1/2 -translate-y-1/2 z-10 pointer-events-none text-accent">
+            <div className="hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 z-10 pointer-events-none text-accent">
               <svg className="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <line x1="5" y1="12" x2="19" y2="12" />
                 <polyline points="12 5 19 12 12 19" />
@@ -565,6 +566,7 @@ export default function HomePage() {
             </div>
           </div>
 
+          {/* Step 2: Link */}
           <div className="flex flex-col relative group">
             <Card className="flex flex-col flex-1 p-6 hover:border-accent transition">
               <div className="flex items-center justify-between mb-4">
@@ -591,7 +593,7 @@ export default function HomePage() {
               </div>
             </Card>
 
-            <div className="hidden md:flex absolute -right-3 top-1/2 -translate-y-1/2 z-10 pointer-events-none text-accent">
+            <div className="hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 z-10 pointer-events-none text-accent">
               <svg className="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <line x1="5" y1="12" x2="19" y2="12" />
                 <polyline points="12 5 19 12 12 19" />
@@ -599,11 +601,48 @@ export default function HomePage() {
             </div>
           </div>
 
+          {/* Step 3: Analyze */}
           <div className="flex flex-col relative group">
             <Card className="flex flex-col flex-1 p-6 hover:border-accent transition">
               <div className="flex items-center justify-between mb-4">
                 <span className="flex size-10 items-center justify-center rounded-full bg-accent/10 text-accent font-bold text-sm">
                   3
+                </span>
+                <svg className="size-6 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z" />
+                  <path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65" />
+                  <path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-bold text-heading">Analyze</h3>
+              <p className="mt-2 text-sm text-body leading-relaxed flex-1">
+                We correlate alerts across physical sites, device tiers, and timestamps to isolate upstream root causes.
+              </p>
+              <div className="mt-6 pt-4 border-t border-line">
+                <Link
+                  href="/alert-correlation"
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-accent hover:underline"
+                >
+                  <span>Alert Analysis</span>
+                  <span aria-hidden="true">→</span>
+                </Link>
+              </div>
+            </Card>
+
+            <div className="hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 z-10 pointer-events-none text-accent">
+              <svg className="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <line x1="5" y1="12" x2="19" y2="12" />
+                <polyline points="12 5 19 12 12 19" />
+              </svg>
+            </div>
+          </div>
+
+          {/* Step 4: Group */}
+          <div className="flex flex-col relative group">
+            <Card className="flex flex-col flex-1 p-6 hover:border-accent transition">
+              <div className="flex items-center justify-between mb-4">
+                <span className="flex size-10 items-center justify-center rounded-full bg-accent/10 text-accent font-bold text-sm">
+                  4
                 </span>
                 <svg className="size-6 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <polygon points="12 2 2 7 12 12 22 7 12 2" />
@@ -626,7 +665,7 @@ export default function HomePage() {
               </div>
             </Card>
 
-            <div className="hidden md:flex absolute -right-3 top-1/2 -translate-y-1/2 z-10 pointer-events-none text-accent">
+            <div className="hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 z-10 pointer-events-none text-accent">
               <svg className="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <line x1="5" y1="12" x2="19" y2="12" />
                 <polyline points="12 5 19 12 12 19" />
@@ -634,11 +673,12 @@ export default function HomePage() {
             </div>
           </div>
 
+          {/* Step 5: Explain */}
           <div className="flex flex-col relative">
             <Card className="flex flex-col flex-1 p-6 hover:border-accent transition">
               <div className="flex items-center justify-between mb-4">
                 <span className="flex size-10 items-center justify-center rounded-full bg-accent/10 text-accent font-bold text-sm">
-                  4
+                  5
                 </span>
                 <svg className="size-6 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3z" />

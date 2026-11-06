@@ -5,7 +5,7 @@ import { AlertAnalysisDashboard } from "@/components/alert-correlation/alert-ana
 export default function AlertCorrelationPage() {
   return (
     <AlertAnalysisDashboard
-      sectionLabel="STEP 3.5 · ANALYSIS"
+      sectionLabel="STEP 3 · ANALYZE"
       title="Alert Analysis"
       description="Inspect distinct alert tickets across physical sites, network layers, explicit device hostnames, and interfaces with multi-stage upstream correlation and verified team routing."
     />
